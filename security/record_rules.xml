@@ -1,0 +1,34 @@
+<odoo>
+    <!-- Customers can create and see their own tickets -->
+    <record id="rule_support_customer_own" model="ir.rule">
+        <field name="name">Support Customer: Own Tickets Only</field>
+        <field name="model_id" ref="model_customer_support_module"/>
+        <field name="groups" eval="[(4, ref('customer_support_module.group_support_customer'))]"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+    </record>
+
+    <!-- Agent: Can access only assigned tickets -->
+    <record id="rule_support_agent_assigned" model="ir.rule">
+        <field name="name">Support Agent: Assigned Tickets Only</field>
+        <field name="model_id" ref="model_customer_support_module"/>
+        <field name="groups" eval="[(4, ref('customer_support_module.group_support_agent'))]"/>
+        <field name="domain_force">[('assigned_user_id', '=', user.id)]</field>
+    </record>
+
+    <!-- Admin: Full Access -->
+    <record id="rule_support_admin_all" model="ir.rule">
+        <field name="name">Support Admin: All Access</field>
+        <field name="model_id" ref="model_customer_support_module"/>
+        <field name="groups" eval="[(4, ref('customer_support_module.group_support_admin'))]"/>
+        <field name="domain_force">[(1,'=',1)]</field>
+    </record>
+
+    <!-- Manager: Can See All Tickets -->
+    <record id="rule_support_manager_all" model="ir.rule">
+        <field name="name">Support Manager: All Tickets</field>
+        <field name="model_id" ref="model_customer_support_module"/>
+        <field name="groups" eval="[(4, ref('customer_support_module.group_support_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    
+</odoo>

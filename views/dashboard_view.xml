@@ -1,0 +1,70 @@
+<odoo>
+    <!-- Dashboard Form View -->
+    <record id="view_customer_support_dashboard_form" model="ir.ui.view">
+        <field name="name">customer.support.dashboard.form</field>
+        <field name="model">customer.support.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Helpdesk Overview" create="false" edit="false" delete="false">
+                <sheet>
+                    <h2>Helpdesk Overview</h2>
+                    <group col="5">
+                        <div class="oe_stat_widget" style="background-color:#8e44ad; color:white; border-radius:10px; padding:15px; text-align:center;">
+                            <h1><field name="tickets_count"/></h1>
+                            <strong>Tickets</strong>
+                        </div>
+                        <div class="oe_stat_widget" style="background-color:#9b59b6; color:white; border-radius:10px; padding:15px; text-align:center;">
+                            <h1><field name="high_priority_count"/></h1>
+                            <strong>High Priority</strong>
+                        </div>
+                        <div class="oe_stat_widget" style="background-color:#e74c3c; color:white; border-radius:10px; padding:15px; text-align:center;">
+                            <h1><field name="urgent_count"/></h1>
+                            <strong>Urgent</strong>
+                        </div>
+                        <div class="oe_stat_widget" style="background-color:#5dade2; color:white; border-radius:10px; padding:15px; text-align:center;">
+                            <h1><field name="closed_count"/></h1>
+                            <strong>Closed</strong>
+                        </div>
+                        <div class="oe_stat_widget" style="background-color:#27ae60; color:white; border-radius:10px; padding:15px; text-align:center;">
+                            <h1><field name="sla_success_rate"/></h1>
+                            <strong>% SLA Success Rate</strong>
+                        </div>
+                    </group>
+
+                    <div class="mt16" style="text-align:center; margin-top:20px;">
+                        <span class="o_form_label" style="font-weight:bold;">Customer Care</span>
+                        <span> customer-care@dudu2.odoo.com </span>
+                        <button type="action"
+                                name="%(action_customer_support_tickets)d"
+                                string="View Tickets"
+                                class="btn btn-primary"
+                                style="margin-left:10px; background-color:#8e44ad; color:white;"/>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ✅ Missing Action Added Here -->
+    <record id="action_customer_support_tickets" model="ir.actions.act_window">
+        <field name="name">Customer Tickets</field>
+        <field name="res_model">customer.support.module</field>
+        <field name="view_mode">list,form</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- Dashboard Menu & Action -->
+    <record id="action_customer_support_dashboard" model="ir.actions.act_window">
+        <field name="name">Helpdesk Dashboard</field>
+        <field name="res_model">customer.support.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <menuitem id="menu_customer_support_dashboard"
+          name="Overview"
+          parent="custom_root_menu"
+          action="action_customer_support_dashboard"
+          sequence="1"
+          groups="base.group_user"/>
+
+</odoo>
