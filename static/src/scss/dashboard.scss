@@ -1,0 +1,109 @@
+.oe_customer_support_dashboard {
+    padding: 16px;
+    
+    .dashboard_title {
+        font-size: 24px;
+        font-weight: 600;
+        color: $o-main-text-color;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid $o-border-color;
+    }
+    
+    .top_section {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+    
+    .metric_card {
+        flex: 1;
+        min-width: 200px;
+        background: $o-view-background-color;
+        border: 1px solid $o-border-color;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .metric_label {
+        font-size: 14px;
+        color: $o-secondary-color;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+    
+    .metric_value {
+        font-size: 32px;
+        font-weight: 600;
+        color: $o-main-text-color;
+        margin-bottom: 4px;
+        line-height: 1.2;
+    }
+    
+    .metric_sublabel {
+        font-size: 12px;
+        color: $o-light-color;
+        font-weight: 400;
+    }
+    
+    .divider {
+        height: 1px;
+        background-color: $o-border-color;
+        margin: 24px 0;
+        width: 100%;
+    }
+    
+    .customer_care_email {
+        font-size: 14px;
+        color: $o-main-text-color;
+        margin-bottom: 20px;
+        font-weight: 500;
+    }
+    
+    .metrics_grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+    }
+    
+    .metric_item {
+        background: $o-view-background-color;
+        border: 1px solid $o-border-color;
+        border-radius: 6px;
+        padding: 16px;
+        text-align: center;
+    }
+    
+    .metric_number {
+        font-size: 18px;
+        font-weight: 600;
+        color: $o-main-text-color;
+        margin-bottom: 4px;
+    }
+    
+    .metric_name {
+        font-size: 12px;
+        color: $o-secondary-color;
+        font-weight: 400;
+    }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+    .oe_customer_support_dashboard {
+        .top_section {
+            flex-direction: column;
+        }
+        
+        .metric_card {
+            min-width: 100%;
+        }
+        
+        .metrics_grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+}

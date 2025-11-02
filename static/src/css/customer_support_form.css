@@ -1,0 +1,527 @@
+/* ======================================================
+   Customer Support Form Styling - Centered Card Layout
+   ====================================================== */
+
+.customer_support_form .o_form_view .o_form_sheet {
+    max-width: 70% !important;
+    margin: 0 auto !important;
+    padding: 20px !important;
+    border: none !important;
+    background: transparent !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.customer_support_form .customer_support_sheet {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    padding: 0;
+    margin: 20px auto;
+    width: 100%;
+    max-width: 900px;
+    position: relative;
+}
+
+/* ---------------- Header Section ---------------- */
+.customer_support_form .customer_support_sheet .oe_title {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 24px 32px;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 0;
+    border-radius: 12px 12px 0 0;
+}
+
+.customer_support_form .customer_support_sheet .oe_title h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+    text-align: center;
+}
+
+/* ---------------- Group Styling ---------------- */
+.customer_support_form .customer_support_sheet .o_group {
+    margin: 0;
+    padding: 0;
+}
+
+.customer_support_form .customer_support_sheet .o_group .o_group_col_6 {
+    width: 100% !important;
+    padding: 0;
+}
+
+/* ---------------- Basic Info Group ---------------- */
+.customer_support_form .customer_support_basic_info {
+    background: #ffffff;
+    padding: 32px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.customer_support_form .customer_support_basic_info .o_field_widget {
+    margin-bottom: 20px;
+}
+
+/* ---------------- Ticket ID Field ---------------- */
+.customer_support_form .form_ticket_id_group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 24px;
+}
+
+.customer_support_form .form_ticket_id_group label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.customer_support_form .form_ticket_id {
+    width: 100%;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 16px;
+    color: #2c3e50;
+    transition: all 0.3s ease;
+}
+
+.customer_support_form .form_ticket_id::placeholder {
+    color: #6c757d;
+    font-size: 15px;
+}
+
+.customer_support_form .form_ticket_id:focus {
+    background: #ffffff;
+    border-color: #0052cc;
+    box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.15);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+/* ---------------- Subject Field ---------------- */
+.customer_support_form .form_subject_group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 24px;
+}
+
+.customer_support_form .form_subject_group label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.customer_support_form .form_subject {
+    width: 100%;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 16px;
+    color: #2c3e50;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.customer_support_form .form_subject::placeholder {
+    color: #6c757d;
+    font-size: 15px;
+}
+
+.customer_support_form .form_subject:focus {
+    background: #ffffff;
+    border-color: #0052cc;
+    box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.15);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+/* ---------------- Description Field ---------------- */
+.customer_support_form .form_description_group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 24px;
+}
+
+.customer_support_form .form_description_group label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.customer_support_form .form_description {
+    width: 100%;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 15px;
+    color: #2c3e50;
+    min-height: 140px;
+    resize: vertical;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.customer_support_form .form_description:focus {
+    background: #ffffff;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.customer_support_form .form_description::placeholder {
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* ---------------- Date & User Fields ---------------- */
+.customer_support_form .form_date,
+.customer_support_form .form_user_id {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.customer_support_form .form_date:focus,
+.customer_support_form .form_user_id:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+    background: #ffffff;
+}
+
+/* ---------------- Assignment & Priority ---------------- */
+.customer_support_form .customer_support_assignment {
+    background: #ffffff;
+    padding: 32px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.customer_support_form .customer_support_assignment .o_group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.customer_support_form .customer_support_assignment .o_group .o_td_label {
+    border: none !important;
+    background: transparent !important;
+}
+
+.customer_support_form .customer_support_assignment .o_group .o_td_label label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.customer_support_form .form_assigned_user,
+.customer_support_form .form_assigned_user_readonly,
+.customer_support_form .form_phase,
+.customer_support_form .form_agent_reply,
+.customer_support_form .form_agent_reply_readonly {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.customer_support_form .form_assigned_user:focus,
+.customer_support_form .form_phase:focus,
+.customer_support_form .form_agent_reply:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+    background: #ffffff;
+}
+
+/* ---------------- Priority Stars ---------------- */
+.customer_support_form .form_priority_customer .o_priority,
+.customer_support_form .form_priority_readonly .o_priority {
+    display: flex;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.customer_support_form .form_priority_customer .o_priority .o_priority_star,
+.customer_support_form .form_priority_readonly .o_priority .o_priority_star {
+    color: #dee2e6;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.customer_support_form .form_priority_customer .o_priority .o_priority_star:hover,
+.customer_support_form .form_priority_readonly .o_priority .o_priority_star:hover {
+    transform: scale(1.2);
+}
+
+.customer_support_form .form_priority_customer .o_priority .o_priority_star.fa-star,
+.customer_support_form .form_priority_readonly .o_priority .o_priority_star.fa-star {
+    color: #f39c12;
+}
+
+/* ---------------- Image Section ---------------- */
+.customer_support_form .customer_support_image {
+    background: #ffffff;
+    padding: 32px;
+    border-bottom: 1px solid #e9ecef;
+    text-align: center;
+}
+
+.customer_support_form .form_image .o_field_image {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 16px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.customer_support_form .form_image .o_field_image:hover {
+    border-color: #3498db;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ---------------- Buttons Section ---------------- */
+.customer_support_form .customer_support_buttons {
+    background: #f8f9fa;
+    padding: 24px 32px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 0 12px 12px;
+}
+
+.customer_support_form .form_add_ticket,
+.customer_support_form .form_submit_reply,
+.customer_support_form .form_assign_agent {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    border: none;
+    border-radius: 8px;
+    padding: 14px 28px;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-width: 140px;
+}
+
+.customer_support_form .form_add_ticket:hover,
+.customer_support_form .form_submit_reply:hover,
+.customer_support_form .form_assign_agent:hover {
+    background: linear-gradient(135deg, #2980b9 0%, #2471a3 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+.customer_support_form .form_add_ticket:active,
+.customer_support_form .form_submit_reply:active,
+.customer_support_form .form_assign_agent:active {
+    transform: translateY(0);
+}
+
+/* ---------------- Labels & Required Indicators ---------------- */
+.customer_support_form .o_form_label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.customer_support_form .o_required_modifier .o_form_label:after {
+    content: " *";
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+/* ---------------- Readonly Fields ---------------- */
+.customer_support_form .o_form_readonly .form_user_id,
+.customer_support_form .o_form_readonly .form_assigned_user_readonly,
+.customer_support_form .o_form_readonly .form_priority_readonly,
+.customer_support_form .o_form_readonly .form_agent_reply_readonly,
+.customer_support_form .o_form_readonly .form_ticket_id {
+    background: #f8f9fa;
+    color: #6c757d;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+}
+
+/* ---------------- Focus States ---------------- */
+.customer_support_form .o_field_widget:focus {
+    outline: none;
+    border-color: #3498db !important;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15) !important;
+    transform: translateY(-1px);
+}
+
+/* ---------------- Responsive Design ---------------- */
+@media (max-width: 768px) {
+    .customer_support_form .o_form_view .o_form_sheet {
+        max-width: 95% !important;
+        padding: 10px !important;
+        min-height: auto;
+    }
+    
+    .customer_support_form .customer_support_sheet {
+        margin: 10px auto;
+        border-radius: 8px;
+    }
+    
+    .customer_support_form .customer_support_assignment .o_group {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .customer_support_form .customer_support_buttons {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .customer_support_form .form_add_ticket,
+    .customer_support_form .form_submit_reply,
+    .customer_support_form .form_assign_agent {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .customer_support_form .customer_support_basic_info,
+    .customer_support_form .customer_support_assignment,
+    .customer_support_form .customer_support_image {
+        padding: 20px;
+    }
+    
+    .customer_support_form .customer_support_sheet .oe_title {
+        padding: 20px 24px;
+    }
+    
+    .customer_support_form .customer_support_sheet .oe_title h1 {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .customer_support_form .o_form_view .o_form_sheet {
+        max-width: 100% !important;
+        padding: 5px !important;
+    }
+    
+    .customer_support_form .customer_support_sheet {
+        margin: 5px auto;
+        border-radius: 6px;
+    }
+    
+    .customer_support_form .customer_support_basic_info,
+    .customer_support_form .customer_support_assignment,
+    .customer_support_form .customer_support_image {
+        padding: 16px;
+    }
+    
+    .customer_support_form .customer_support_buttons {
+        padding: 20px 16px;
+    }
+}
+
+/* ---------------- Role-based Styling ---------------- */
+.customer_support_form .customer_support_assignment .o_field_widget[groups*="customer_support_module.group_support_customer"] {
+    background: #e8f4fd;
+    border-color: #3498db;
+}
+
+.customer_support_form .customer_support_assignment .o_field_widget[groups*="customer_support_module.group_support_agent"] {
+    background: #f0f8f0;
+    border-color: #27ae60;
+}
+
+.customer_support_form .customer_support_assignment .o_field_widget[groups*="customer_support_module.group_support_manager"] {
+    background: #fef9e7;
+    border-color: #f39c12;
+}
+
+/* ---------------- Card Animation ---------------- */
+.customer_support_form .customer_support_sheet {
+    animation: cardSlideIn 0.5s ease-out;
+}
+
+@keyframes cardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Attachment Section Styles */
+.attachment-section {
+    margin: 40px auto 20px auto;
+    max-width: 100%;
+    text-align: center;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 30px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.attachment-label {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 20px;
+    display: block;
+    color: #333;
+    text-align: center;
+}
+
+.attachment-preview-header {
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    color: #0c5460;
+}
+
+.attachment-preview-header strong {
+    font-weight: 600;
+}
+
+.file-upload-area {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+
+.simple-upload {
+    margin-bottom: 15px;
+}
+
+.upload-instructions {
+    text-align: center;
+    margin-top: 15px;
+    color: #6c757d;
+}
+
+.upload-instructions p {
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.upload-instructions small {
+    font-size: 12px;
+}

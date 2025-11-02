@@ -1,0 +1,185 @@
+<odoo>
+    <!-- Dashboard Form View -->
+    <record id="view_customer_support_dashboard_form" model="ir.ui.view">
+        <field name="name">customer.support.dashboard.form</field>
+        <field name="model">customer.support.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Overview" create="false" edit="false" delete="false">
+                <sheet>
+                    <div class="oe_customer_support_dashboard">
+                        
+                        <!-- Header -->
+                        <h2 class="dashboard_title">Overview</h2>
+                        
+                        <!-- Main Content with Cards -->
+                        <div class="main_content">
+                            <!-- Left: 4x4 Grid in a Card -->
+                            <div class="metrics_card">
+                                <div class="metrics_card_header">
+                                    <h3>Ticket Analytics</h3>
+                                </div>
+                                <div class="metrics_grid_4x4">
+                                    <!-- Column 1 -->
+                                    <div class="grid_column">
+                                        <div class="metric_card">
+                                            <div class="metric_label">Open Tickets</div>
+                                            <div class="metric_value"><field name="tickets_count"/></div>
+                                            <div class="metric_sublabel">Tickets</div>
+                                        </div>
+                                        <div class="metric_card">
+                                            <div class="metric_label">Avg Open Hours</div>
+                                            <div class="metric_value"><field name="avg_open_hours"/></div>
+                                            <div class="metric_sublabel">Hours</div>
+                                        </div>
+                                        <div class="metric_card">
+                                            <div class="metric_label">Failed Tickets</div>
+                                            <div class="metric_value"><field name="failed_tickets_count"/></div>
+                                            <div class="metric_sublabel">Tickets</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Column 2 -->
+                                    <div class="grid_column">
+                                        <div class="metric_card">
+                                            <div class="metric_label">Tickets</div>
+                                            <div class="metric_value"><field name="total_tickets"/></div>
+                                            <div class="metric_sublabel">Total</div>
+                                        </div>
+                                        <div class="metric_card">
+                                            <div class="metric_label">Total Hours</div>
+                                            <div class="metric_value"><field name="total_hours"/></div>
+                                            <div class="metric_sublabel">Hours</div>
+                                        </div>
+                                        <div class="metric_card">
+                                            <div class="metric_label">Failed Rate</div>
+                                            <div class="metric_value"><field name="failed_rate"/>%</div>
+                                            <div class="metric_sublabel">Percentage</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Column 3 -->
+                                    <div class="grid_column">
+                                        <div class="metric_card">
+                                            <div class="metric_label">High Priority</div>
+                                            <div class="metric_value"><field name="high_priority_count"/></div>
+                                            <div class="metric_sublabel">Tickets</div>
+                                        </div>
+                                        <div class="metric_card">
+                                            <div class="metric_label">Avg High Priority Hours</div>
+                                            <div class="metric_value"><field name="avg_high_priority_hours"/></div>
+                                            <div class="metric_sublabel">Hours</div>
+                                        </div>
+                                        <div class="metric_card">
+                                            <div class="metric_label">High Priority Failed</div>
+                                            <div class="metric_value"><field name="high_priority_failed"/></div>
+                                            <div class="metric_sublabel">Tickets</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Column 4 -->
+                                    <div class="grid_column">
+                                        <div class="metric_card">
+                                            <div class="metric_label">Urgent</div>
+                                            <div class="metric_value"><field name="urgent_count"/></div>
+                                            <div class="metric_sublabel">Tickets</div>
+                                        </div>
+                                        <div class="metric_card">
+                                            <div class="metric_label">Avg Urgent Hours</div>
+                                            <div class="metric_value"><field name="avg_urgent_hours"/></div>
+                                            <div class="metric_sublabel">Hours</div>
+                                        </div>
+                                        <div class="metric_card">
+                                            <div class="metric_label">Urgent Failed</div>
+                                            <div class="metric_value"><field name="urgent_failed"/></div>
+                                            <div class="metric_sublabel">Tickets</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right: Performance Card -->
+                            <div class="performance_card">
+                                <div class="performance_header">
+                                    <h3>My Performance</h3>
+                                </div>
+                                <div class="performance_metrics">
+                                    <div class="performance_metric">
+                                        <div class="performance_label">Today</div>
+                                        <div class="performance_value"><field name="closed_today_count"/></div>
+                                        <div class="performance_sublabel">Closed Tickets</div>
+                                    </div>
+                                    <div class="performance_metric">
+                                        <div class="performance_label">Avg Last 7 days</div>
+                                        <div class="performance_value"><field name="avg_last_7_days"/></div>
+                                        <div class="performance_sublabel">SLA Success Rate</div>
+                                    </div>
+                                    <div class="performance_metric">
+                                        <div class="performance_label">Daily Target</div>
+                                        <div class="performance_value"><field name="daily_target"/>%</div>
+                                        <div class="performance_sublabel">Achievement</div>
+                                    </div>
+                                    <div class="performance_sample">
+                                        <div class="sample_label">SAMPLE</div>
+                                        <div class="sample_value">85%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Horizontal Divider -->
+                        <div class="divider"></div>
+                        
+                        <!-- Customer Care Section -->
+                       <!--  <div class="customer_care_section">
+                            <div class="customer_care_email">customer-care@kamalk.edoo.com</div>
+                            
+                            <div class="metrics_grid">
+                                <div class="metric_item">
+                                    <div class="metric_number">0</div>
+                                    <div class="metric_name">Open</div>
+                                </div>
+                                <div class="metric_item">
+                                    <div class="metric_number">0</div>
+                                    <div class="metric_name">Unassigned</div>
+                                </div>
+                                <div class="metric_item">
+                                    <div class="metric_number">0</div>
+                                    <div class="metric_name">Urgent</div>
+                                </div>
+                                <div class="metric_item">
+                                    <div class="metric_number">0</div>
+                                    <div class="metric_name">Failed</div>
+                                </div>
+                            </div>
+                        </div> -->
+
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for Tickets -->
+    <record id="action_customer_support_tickets" model="ir.actions.act_window">
+        <field name="name">Customer Tickets</field>
+        <field name="res_model">customer.support.module</field>
+        <field name="view_mode">tree,form</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- Dashboard Action -->
+    <record id="action_customer_support_dashboard" model="ir.actions.act_window">
+        <field name="name">Helpdesk Dashboard</field>
+        <field name="res_model">customer.support.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <menuitem id="menu_customer_support_dashboard"
+          name="Overview"
+          parent="menu_customer_support_root"
+          action="action_customer_support_dashboard"
+          sequence="1"
+          groups="base.group_user"/>
+
+</odoo>

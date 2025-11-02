@@ -1,0 +1,42 @@
+/* Priority Card Styles */
+.priority-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid transparent;
+    min-width: 70px;
+    text-align: center;
+}
+
+.priority-urgent {
+    background-color: #fee;
+    color: #d00;
+    border-color: #f55;
+    box-shadow: 0 2px 4px rgba(255, 0, 0, 0.1);
+}
+
+.priority-high {
+    background-color: #fff3e0;
+    color: #e65100;
+    border-color: #ff9800;
+    box-shadow: 0 2px 4px rgba(255, 152, 0, 0.1);
+}
+
+.priority-medium {
+    background-color: #e3f2fd;
+    color: #1565c0;
+    border-color: #2196f3;
+    box-shadow: 0 2px 4px rgba(33, 150, 243, 0.1);
+}
+
+.priority-low {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+    border-color: #4caf50;
+    box-shadow: 0 2px 4px rgba(76, 175, 80, 0.1);
+}
+
