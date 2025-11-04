@@ -305,7 +305,7 @@
 .customer_support_form .form_add_ticket,
 .customer_support_form .form_submit_reply,
 .customer_support_form .form_assign_agent {
-    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    background: #71639e !important;
     border: none;
     border-radius: 8px;
     padding: 14px 28px;
@@ -524,4 +524,80 @@
 
 .upload-instructions small {
     font-size: 12px;
+}
+/* ======================================================
+   Customer Button Styling - Using Working Selectors
+   ====================================================== */
+
+.customer_support_form .customer_support_buttons {
+    background: #f8f9fa;
+    padding: 20px 24px;
+    border-top: 1px solid #e9ecef;
+    display: flex !important;
+    justify-content: flex-end !important; /* Align buttons to the right */
+    gap: 12px !important;
+    align-items: center !important;
+}
+
+.customer_support_form .customer_support_buttons button {
+    min-width: 140px !important;
+    height: 40px !important;
+    padding: 14px 28px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    display: inline-flex !important;
+    align-items: center !important; /* Fixed: changed from 'end' to 'center' */
+    justify-content: center !important;
+}
+
+/* Specific styles for Create Ticket button */
+.customer_support_form .customer_support_buttons button.form_add_ticket {
+    background: #71639e !important;
+    color: #ffffff !important;
+    border: 1px solid #71639e !important;
+}
+
+.customer_support_form .customer_support_buttons button.form_add_ticket:hover {
+    background: linear-gradient(135deg, #2980b9 0%, #2471a3 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4) !important;
+}
+
+/* Specific styles for Cancel button */
+.customer_support_form .customer_support_buttons button.form_cancel_customer {
+    background: #6c757d !important;
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid #5a6268 !important;
+}
+
+.customer_support_form .customer_support_buttons button.form_cancel_customer:hover {
+    background: linear-gradient(135deg, #5a6268 0%, #495057 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4) !important;
+}
+
+/* Reset other buttons to their original size */
+.customer_support_form .customer_support_buttons button.form_submit_reply,
+.customer_support_form .customer_support_buttons button.form_assign_agent,
+.customer_support_form .customer_support_buttons button.btn-secondary:not(.form_cancel_customer) {
+    min-width: auto !important;
+    height: auto !important;
+    padding: 8px 16px !important;
+    /* Let Odoo handle the default styles for these */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .customer_support_form .customer_support_buttons {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        justify-content: center !important;
+    }
+    
+    .customer_support_form .customer_support_buttons button {
+        width: 100% !important;
+        text-align: center !important;
+    }
 }

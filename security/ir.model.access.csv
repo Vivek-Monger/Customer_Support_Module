@@ -7,3 +7,5 @@ support_agent_access,Support Agent,model_customer_support_module,customer_suppor
 support_customer_access,Support Customer,model_customer_support_module,customer_support_module.group_support_customer,1,1,1,0
 
 access_customer_support_dashboard,Customer Support Dashboard,model_customer_support_dashboard,,1,1,1,1
+access_confirm_create_ticket_wizard,access.confirm.create.ticket.wizard,model_confirm_create_ticket_wizard,,1,1,1,1
+access_confirm_assign_agent_wizard,access_confirm_assign_agent_wizard,model_confirm_assign_agent_wizard,base.group_user,1,1,1,1

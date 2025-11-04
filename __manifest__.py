@@ -30,8 +30,9 @@ Long description of module's purpose
         'views/phase.xml',
         #'views/delete_confirm_view.xml',
         'views/res_users_inherit_view.xml',
-        #'views/dashboard.xml',
-        'views/dashboard_view.xml'
+        'views/dashboard_view.xml',
+        'wizard/views.xml',
+        'wizard/confirm_assign_agent_wizard_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
@@ -43,7 +44,8 @@ Long description of module's purpose
         'customer_support_module/static/src/css/dashboard.css',
         'customer_support_module/static/src/css/customer_support_form.css',
         'customer_support_module/static/src/css/customer_support_list.css',
-        #'customer_support_module/static/src/css/dashboard.scss',
+        #'customer_support_module/static/src/priority_styling.js',
+        'customer_support_module/static/src/css/confirm_ticket.css',
     ],
     },
     'installable': True,

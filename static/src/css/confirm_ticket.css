@@ -1,0 +1,247 @@
+/* Ticket Confirmation Wizard Styles */
+.ticket-confirmation-form {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    padding: 0;
+    margin: 20px;
+    border: 1px solid #e0e0e0;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-header {
+    background: linear-gradient(135deg, #71639e 0%, #b39cff 100%);
+    color: white;
+    padding: 25px 30px;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 0;
+}
+
+.form-header h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: white;
+}
+
+.form-subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.ticket-fields-group {
+    background: white;
+    padding: 30px;
+    margin-bottom: 0;
+}
+
+.field-row {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.field-row:last-child {
+    margin-bottom: 0;
+}
+
+.field-label {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+/* Input Field Styles - Clean without boxes */
+.ticket-field .o_input {
+    border: 1px solid #dcdfe6;
+    border-radius: 4px;
+    padding: 10px 12px;
+    width: 100%;
+    font-size: 14px;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    line-height: 1.5;
+}
+
+.ticket-field .o_input:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
+.ticket-field .o_input:hover {
+    border-color: #c0c4cc;
+}
+
+/* Subject Field */
+.subject-field .o_input {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Description Field */
+.description-field .o_input {
+    min-height: 100px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+/* Priority Field */
+.priority-field .o_input {
+    background: white;
+    color: #2c3e50;
+    cursor: pointer;
+    max-width: 200px;
+}
+
+/* Priority specific styles */
+.priority-field .o_input option[value="high"],
+.priority-field .o_input option[value="3"] {
+    color: #e74c3c;
+    font-weight: 600;
+}
+
+.priority-field .o_input option[value="medium"],
+.priority-field .o_input option[value="2"] {
+    color: #f39c12;
+    font-weight: 600;
+}
+
+.priority-field .o_input option[value="low"],
+.priority-field .o_input option[value="1"] {
+    color: #27ae60;
+    font-weight: 600;
+}
+
+/* Date Field */
+.date-field .o_input {
+    cursor: pointer;
+    max-width: 200px;
+}
+
+/* Form Footer */
+.form-footer {
+    background: #f8f9fa;
+    padding: 20px 30px;
+    gap: 12px;
+    border-radius: 0 0 8px 8px;
+    border-top: 1px solid #e9ecef;
+    margin-top: 0;
+    display: flex !important;
+    justify-content: flex-end !important;
+}
+
+.confirm-button {
+    background: #71639e;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 24px;
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+    transition: all 0.2s ease;
+    min-width: 120px;
+    height: 40px;
+}
+
+.confirm-button:hover {
+    background: #71639e;
+}
+
+.cancel-button {
+    background: #95a5a6;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+    transition: all 0.2s ease;
+    min-width: 100px;
+    height: 40px;
+}
+
+.cancel-button:hover {
+    background: #7f8c8d;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ticket-confirmation-form {
+        margin: 10px;
+    }
+    
+    .ticket-fields-group {
+        padding: 20px;
+    }
+    
+    .form-header {
+        padding: 20px;
+    }
+    
+    .field-row {
+        margin-bottom: 15px;
+    }
+    
+    .priority-field .o_input,
+    .date-field .o_input {
+        max-width: 100%;
+    }
+    
+    .form-footer {
+        padding: 15px 20px;
+        flex-direction: column;
+    }
+    
+    .confirm-button,
+    .cancel-button {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* Animation */
+@keyframes formSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ticket-confirmation-form {
+    animation: formSlideIn 0.3s ease-out;
+}
+
+/* Simple clean layout like the reference image */
+.ticket-fields-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.field-row {
+    padding: 12px 0;
+    border-bottom: 1px solid #f8f9fa;
+    margin-bottom: 0;
+}
+
+.field-row:last-of-type {
+    border-bottom: none;
+}
+
+.field-label {
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #5a6a7a;
+}

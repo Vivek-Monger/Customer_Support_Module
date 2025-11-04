@@ -1,0 +1,62 @@
+<odoo>
+    <record id="view_confirm_create_ticket_wizard_form" model="ir.ui.view">
+        <field name="name">confirm.create.ticket.wizard.form</field>
+        <field name="model">confirm.create.ticket.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create New Ticket" class="ticket-confirmation-form">
+                <div class="form-header">
+                    <h2>Ticket Confirmation</h2>
+                    <p>Please verify that all the information are correct.</p>
+                </div>
+                
+                <group class="ticket-fields-group">
+                    <!-- Subject Field -->
+                    <div class="field-row">
+                        <label for="subject" class="field-label">
+                            Subject
+                        </label>
+                        <div class="field-container">
+                            <field name="subject" class="ticket-field subject-field"/>
+                        </div>
+                    </div>
+                    
+                    <!-- Description Field -->
+                    <div class="field-row">
+                        <label for="description" class="field-label">
+                            Description
+                        </label>
+                        <div class="field-container">
+                            <field name="description" class="ticket-field description-field"/>
+                        </div>
+                    </div>
+                    
+                    <!-- Priority Field -->
+                    <div class="field-row">
+                        <label for="priority" class="field-label">Priority</label>
+                        <div class="field-container">
+                            <field name="priority" class="ticket-field priority-field"/>
+                        </div>
+                    </div>
+                    
+                    <!-- Date Field -->
+                    <div class="field-row">
+                        <label for="date" class="field-label">Date</label>
+                        <div class="field-container">
+                            <field name="date" class="ticket-field date-field"/>
+                        </div>
+                    </div>
+                </group>
+                
+                <footer class="form-footer">
+                    <button name="action_confirm_create"
+                            string="Confirm"
+                            type="object"
+                            class="btn-primary confirm-button"/>
+                    <button string="Cancel"
+                            special="cancel"
+                            class="btn-secondary cancel-button"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

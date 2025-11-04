@@ -104,21 +104,15 @@ class CustomerSupportModule(models.Model):
 
 
     def write(self, vals):
-        for record in self:
-            # Allow edits only within first 30 seconds after creation
-            allowed_time = record.create_date + timedelta(seconds=30)
-            if datetime.utcnow() > allowed_time:
-                # After 30 seconds, prevent edits to subject, description, priority, image
-                forbidden_fields = ['subject', 'description', 'priority', 'image']
-                for field in forbidden_fields:
-                    if field in vals:
-                        raise UserError(f"{field.replace('_',' ').title()} cannot be edited after 30 seconds of creation.")
+        # Prevent edits to protected fields permanently
+        protected_fields = ['subject', 'description', 'priority', 'ticket_id']
+        for field in protected_fields:
+            if field in vals:
+                raise UserError(f"{field.replace('_',' ').title()} cannot be edited after creation.")
 
-            # Restrict phase change (Kanban drag) for customers
-            if 'phase_id' in vals:
-                # If the user is NOT a support agent
-                if not self.env.user.has_group('customer_support_module.group_support_agent'):
-                    raise UserError("Only Support Agents can change the ticket phase (drag in Kanban view).")
+        # Restrict phase change for non-agents
+        if 'phase_id' in vals and not self.env.user.has_group('customer_support_module.group_support_agent'):
+            raise UserError("Only Support Agents can change the ticket phase.")
 
         return super(CustomerSupportModule, self).write(vals)
 
@@ -169,65 +163,87 @@ class CustomerSupportModule(models.Model):
         return f"#DC-{next_seq:04d}"
     
     def action_create_ticket(self):
+        """Show confirmation popup before creating the ticket."""
         self.ensure_one()
-
         if not self.env.user.has_group('customer_support_module.group_support_customer'):
             raise UserError("Only customers can create tickets.")
 
-        # Just confirm or save existing record, no need to create new one
-        self.write({'date': fields.Date.context_today(self)})
-
-        # Optional: show success message
+        # Open the confirmation wizard with pre-filled info
         return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': 'Ticket Submitted',
-                'message': 'Your support ticket has been submitted successfully!',
-                'sticky': False,
-            }
+            'type': 'ir.actions.act_window',
+            'res_model': 'confirm.create.ticket.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_subject': self.subject,
+                'default_description': self.description,
+                'default_date': self.date,
+                'default_priority': self.priority,
+                'active_id': self.id,
+            },
         }
+
         
     def action_submit_reply(self):
         """Allow only Support Agents to submit replies."""
         for record in self:
+            # ✅ Restrict to Support Agent group
             if not self.env.user.has_group('customer_support_module.group_support_agent'):
                 raise UserError("Only Support Agents can submit replies.")
 
+            # ✅ Ensure reply exists
             if not record.agent_reply:
                 raise UserError("Please enter a reply before submitting.")
 
-            # Post the reply to the chatter
+            # ✅ Post reply to chatter
             record.message_post(
                 body=f"<b>Agent Reply:</b><br/>{record.agent_reply}",
                 message_type='comment',
                 subtype_xmlid='mail.mt_comment',
             )
 
-            # Save the reply in the record (no clearing)
+            # ✅ Save reply to the record
             record.write({'agent_reply': record.agent_reply})
+
+        # ✅ Close popup and go to list view
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Customer Support Tickets',
+            'res_model': 'customer.support.module',
+            'view_mode': 'list,kanban,form',
+            'target': 'current',
+        }
             
     def action_assign_agent(self):
-        """Allow managers to assign a support agent to the ticket."""
+        """Open confirmation popup before assigning agent"""
         for record in self:
             if not self.env.user.has_group('customer_support_module.group_support_manager'):
                 raise UserError("Only Managers can assign agents.")
-
             if not record.assigned_user_id:
-                raise UserError("Please select an agent before clicking 'Assign Agent'.")
+                raise UserError("Please select an agent before assigning.")
 
-            # Save the assignment
-            record.write({'assigned_user_id': record.assigned_user_id})
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'confirm.assign.agent.wizard',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {
+                    'default_ticket_id': record.id,
+                    'default_assigned_user_id': record.assigned_user_id.id,
+                },
+            }
 
-            # Optional: post a message to chatter
-            record.message_post(
-                body=f"<b>Assigned Agent:</b> {record.assigned_user_id.name}",
-                message_type='comment',
-                subtype_xmlid='mail.mt_comment',
-            )
-    def action_cancel(self):
-        """Close the current form without saving"""
-        return {'type': 'ir.actions.act_window_close'}
+    def action_cancel_ticket(self):
+        """Cancel action that returns to previous page"""
+        # If you want to discard changes and go back
+        return {
+            'type': 'ir.actions.act_window',
+            'view_mode': 'list',
+            'res_model': 'customer.support.module',
+            'target': 'current',
+            'views': [(False, 'list')],
+        }
+    
         
         
 class Phase(models.Model):

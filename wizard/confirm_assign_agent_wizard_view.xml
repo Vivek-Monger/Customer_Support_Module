@@ -1,0 +1,29 @@
+<odoo>
+    <record id="view_confirm_assign_agent_wizard_form" model="ir.ui.view">
+        <field name="name">confirm.assign.agent.wizard.form</field>
+        <field name="model">confirm.assign.agent.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirm Agent Assignment" class="o_form_view" create="false" edit="false">
+                <group>
+                    <h3 style="text-align:center;">
+                        Are you sure you want to assign this ticket to
+                        <field name="assigned_user_id" nolabel="1" class="oe_inline"/>
+                        ?
+                    </h3>
+
+                </group>
+                <footer>
+                    <button name="action_confirm_assignment"
+                            string="Yes"
+                            type="object"
+                            class="btn-primary"/>
+                    <button name="action_cancel"
+                            string="Cancel"
+                            type="object"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
