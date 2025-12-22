@@ -35,6 +35,10 @@ class customer_support_module(models.Model):
         domain=[('res_model', '=', 'customer.support.module')]
     )
     
+    phase_id = fields.Many2one('progress.phase', 
+                               string="Phase",
+                               group_expand='_group_expand_phases')
+    
     @api.model
     def _default_ticket_id(self):
         """Generate default ticket ID in format DC-XXXX"""
@@ -60,3 +64,25 @@ class customer_support_module(models.Model):
             next_seq = 1
             
         return f"#DC-{next_seq:04d}"
+    
+    @api.model
+    def _group_expand_phases(self, groups, domain):
+        return self.env['progress.phase'].search([])
+    
+    @api.model
+    def _default_phase(self):
+        return self.env['progress.phase'].search(
+            [('phase', '=', 'New')],
+            limit=1
+        )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        default_phase = self._default_phase()
+
+        for vals in vals_list:
+            if not vals.get('phase_id'):
+                vals['phase_id'] = default_phase.id if default_phase else False
+
+        return super().create(vals_list)
+
