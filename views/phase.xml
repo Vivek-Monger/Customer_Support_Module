@@ -1,0 +1,39 @@
+<odoo>
+    <record id="progress_phase_list_view" model="ir.ui.view">
+      <field name="name">progress.phase.list.view</field>
+      <field name="model">progress.phase</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="phase"/>
+        </list>
+      </field>
+  </record>
+
+  <!-- Form View -->
+  <record id="progress_phase_form_view" model="ir.ui.view">
+      <field name="name">progress.phase.form.view</field>
+      <field name="model">progress.phase</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+              <field name="phase" placeholder="Add the phase your are in ..." required = "1"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+  </record>
+
+  <!-- Action -->
+  <record id="progress_phase_action" model="ir.actions.act_window">
+      <field name="name">Progress Phase</field>
+      <field name="res_model">progress.phase</field>
+      <field name="view_mode">list,form</field>
+  </record>
+
+  <menuitem id="progress_phase_menu"
+            action="progress_phase_action"
+            name="Phase"
+            parent="menu_customer_support_root"
+            sequence="30"/>
+</odoo>
