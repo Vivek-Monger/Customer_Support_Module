@@ -7,6 +7,11 @@ class customer_support_module(models.Model):
 
  
     subject = fields.Char()
-    project = fields.Char()
+    project = fields.Many2one('customer.project')
     description = fields.Text()
-    priority = fields.Char()
+    priority = fields.Selection([
+        ('0', 'Low'),
+        ('1', 'Medium'),
+        ('2', 'High'),
+        ('3', 'Urgent')
+    ], string="Priority", default='0')

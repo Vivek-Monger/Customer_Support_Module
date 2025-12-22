@@ -23,15 +23,14 @@
                   <sheet>
                       <group>
                           <field name="subject"/>
+                          <field name="description"/>
                           <field name="project"/>
                           <field name="priority"/>
-                          <field name="description"/>
                       </group>
                   </sheet>
               </form>
           </field>
       </record>
-
 
     <!-- Actions -->
       <record id="action_my_tickets" model="ir.actions.act_window">
@@ -55,7 +54,6 @@
         action="action_my_tickets"
         sequence="10"
     />
-
 
   </data>
 </odoo>
