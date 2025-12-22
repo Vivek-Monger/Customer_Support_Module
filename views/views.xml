@@ -6,6 +6,7 @@
         <field name="model">customer.support.module</field>
         <field name="arch" type="xml">
           <list string="My Tickets" class="customer-ticket-list">
+            <field name = "ticket_id"/>
             <field name = "subject"/>
             <field name = "project"/>
             <field name = "description"/>
@@ -27,6 +28,27 @@
                           <field name="project"/>
                           <field name="priority"/>
                       </group>
+                      <!-- File Upload Section - Direct file upload -->
+                    <div class="attachment-section">
+                        <div class="o_form_label attachment-label">Attachments (Optional)</div>
+                        
+                        <div class="attachment-preview-header">
+                            <strong>Preview</strong>
+                        </div>
+                        
+                        <div class="file-upload-area">
+                            <!-- Simple binary field for direct file upload -->
+                            <field name="attachment_ids" 
+                                   nolabel="1"
+                                   context="{'default_res_model': 'customer.support.module', 'default_res_id': id}"
+                                   widget="many2many_binary"
+                                   options="{'creatable': true, 'editable': true, 'deletable': true}"/>
+                            
+                            <div class="upload-instructions">
+                                <small>Supported formats: Images, PDFs, Documents (Max 5 files, 10MB each)</small>
+                            </div>
+                        </div>
+                    </div>
                   </sheet>
               </form>
           </field>
