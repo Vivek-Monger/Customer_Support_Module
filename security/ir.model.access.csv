@@ -7,3 +7,5 @@ access_customer_support_customer,Customer Support Customer,model_customer_suppor
 access_customer_support_support_agent,Customer Support Agent,model_customer_support_module,customer_support_module.group_support_agent,1,1,0,0
 
 access_user_manager_admin,User Manager Admin,model_user_manager,customer_support_module.group_admin,1,1,1,1
+
+access_customer_ticket_portal,access.customer.ticket.portal,model_customer_support_module,base.group_portal,1,0,0,0

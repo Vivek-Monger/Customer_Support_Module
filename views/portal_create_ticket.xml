@@ -1,0 +1,51 @@
+<odoo>
+  <template id="portal_create_ticket" name="Create Ticket">
+    <!-- Inherit Odoo portal layout -->
+    <t t-call="portal.portal_layout">
+
+      <!-- Breadcrumbs -->
+      <t t-set="breadcrumbs" t-value="[
+        ('/my', 'My Account'),
+        ('/my/tickets', 'Customer Support / My Tickets'),
+        ('/my/tickets/create', 'Create Ticket')
+      ]"/>
+
+      <div class="container mt-4">
+        <h2>Create a New Ticket</h2>
+
+        <!-- ✅ Form for creating ticket -->
+        <form action="/my/tickets/create/submit" method="post" class="mt-3">
+          
+          <!-- CSRF Token -->
+          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+          <div class="mb-3">
+            <label for="subject" class="form-label">Subject</label>
+            <input type="text" class="form-control" name="subject" id="subject" required='1'/>
+          </div>
+
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" name="description" id="description" rows="5" required='1'></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="priority" class="form-label">Priority</label>
+            <select class="form-select" name="priority" id="priority">
+              <option value="0">Low</option>
+              <option value="1">Medium</option>
+              <option value="2">High</option>
+              <option value="3">Urgent</option>
+            </select>
+          </div>
+
+          <!-- Submit and Cancel buttons -->
+          <button type="submit" class="btn btn-primary">Create Ticket</button>
+          <a href="/my/tickets" class="btn btn-secondary ms-2">Cancel</a>
+
+        </form>
+      </div>
+
+    </t>
+  </template>
+</odoo>
