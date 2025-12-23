@@ -5,7 +5,7 @@
       <field name="name">customer.support.module.kanban</field>
       <field name="model">customer.support.module</field>
       <field name="arch" type="xml">
-        <kanban default_group_by="phase_id">
+        <kanban default_group_by="phase_id" create="false">
           <field name="phase_id"/>
           <field name="ticket_id"/>
           <field name="subject"/>
@@ -35,7 +35,7 @@
         <field name="name">customer.support.module.list.customer</field>
         <field name="model">customer.support.module</field>
         <field name="arch" type="xml">
-          <list string="My Tickets" class="customer-ticket-list">
+          <list string="My Tickets" class="customer-ticket-list" create="false">
             <field name = "ticket_id"/>
             <field name = "subject"/>
             <field name = "project"/>
@@ -50,7 +50,7 @@
           <field name="name">customer.support.module.form.view</field>
           <field name="model">customer.support.module</field>
           <field name="arch" type="xml">
-              <form string="Support Ticket" class="customer_support_form">
+              <form string="Support Ticket" class="customer_support_form" create="false">
                   <sheet>
                       <group>
                           <field name="subject" readonly='1'/>

@@ -2,7 +2,7 @@
   <template id="portal_my_tickets" name="My Tickets">
     <t t-call="portal.portal_layout">
 
-      <!-- Breadcrumbs = submenu -->
+      <!-- Breadcrumbs -->
       <t t-set="breadcrumbs" t-value="[
         ('/my', 'My Account'),
         ('/my/tickets', 'Customer Support / My Tickets')
@@ -12,46 +12,109 @@
 
         <h2>My Tickets</h2>
 
-        <!-- Optional submenu tabs -->
-        <ul class="nav nav-tabs mb-3">
-          <li class="nav-item">
-            <a class="nav-link active" href="/my/tickets">
-              My Tickets
+        <!-- View Switch Buttons -->
+        <div class="d-flex justify-content-end mb-3">
+          <div class="btn-group">
+            <a href="/my/tickets?view=list"
+               class="btn btn-sm"
+               t-att-class="current_view == 'list' and 'btn-primary' or 'btn-outline-primary'">
+              List
             </a>
-          </li>
-        </ul>
+            <a href="/my/tickets?view=kanban"
+               class="btn btn-sm"
+               t-att-class="current_view == 'kanban' and 'btn-primary' or 'btn-outline-primary'">
+              Kanban
+            </a>
+          </div>
+        </div>
 
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Ticket</th>
-              <th>Subject</th>
-              <th>Priority</th>
-              <th>Status</th>
-            </tr>
-          </thead>
+        <!-- ================= LIST VIEW ================= -->
+        <t t-if="current_view == 'list'">
 
-          <tbody>
-            <t t-foreach="tickets" t-as="ticket">
+          <table class="table table-striped">
+            <thead>
               <tr>
-                <td><t t-esc="ticket.ticket_id"/></td>
-                <td><t t-esc="ticket.subject"/></td>
-                <td>
-                  <span t-if="ticket.priority == '0'">Low</span>
-                  <span t-if="ticket.priority == '1'">Medium</span>
-                  <span t-if="ticket.priority == '2'">High</span>
-                  <span t-if="ticket.priority == '3'">Urgent</span>
-                </td>
-                <td>
-                  <t t-esc="ticket.phase_id.phase if ticket.phase_id else ''"/>
-                </td>
+                <th>Ticket</th>
+                <th>Subject</th>
+                <th>Priority</th>
+                <th>Status</th>
               </tr>
-            </t>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <t t-foreach="tickets" t-as="ticket">
+                <tr>
+                  <td><t t-esc="ticket.ticket_id"/></td>
+                  <td><t t-esc="ticket.subject"/></td>
+                  <td>
+                    <span t-if="ticket.priority == '0'">Low</span>
+                    <span t-if="ticket.priority == '1'">Medium</span>
+                    <span t-if="ticket.priority == '2'">High</span>
+                    <span t-if="ticket.priority == '3'">Urgent</span>
+                  </td>
+                  <td>
+                    <t t-esc="ticket.phase_id.phase if ticket.phase_id else ''"/>
+                  </td>
+                </tr>
+              </t>
+            </tbody>
+          </table>
 
-        <t t-if="not tickets">
-          <p class="text-muted">No tickets found.</p>
+          <t t-if="not tickets">
+            <p class="text-muted">No tickets found.</p>
+          </t>
+
+        </t>
+
+        <!-- ================= KANBAN VIEW ================= -->
+        <t t-if="current_view == 'kanban'">
+
+          <div class="row">
+
+            <t t-foreach="phase_map.items()" t-as="phase_item">
+              <t t-set="phase" t-value="phase_item[0]"/>
+              <t t-set="tickets" t-value="phase_item[1]"/>
+
+              <div class="col-md-3">
+                <div class="card shadow-sm mb-3">
+
+                  <div class="card-header text-center fw-bold bg-light">
+                    <t t-esc="phase.phase"/>
+                  </div>
+
+                  <div class="card-body p-2">
+
+                    <t t-if="tickets">
+                      <t t-foreach="tickets" t-as="ticket">
+                        <div class="card mb-2">
+                          <div class="card-body p-2">
+                            <strong><t t-esc="ticket.ticket_id"/></strong>
+                            <div class="small text-muted">
+                              <t t-esc="ticket.subject"/>
+                            </div>
+
+                            <div class="mt-1">
+                              <span class="badge bg-secondary" t-if="ticket.priority == '0'">Low</span>
+                              <span class="badge bg-info" t-if="ticket.priority == '1'">Medium</span>
+                              <span class="badge bg-warning" t-if="ticket.priority == '2'">High</span>
+                              <span class="badge bg-danger" t-if="ticket.priority == '3'">Urgent</span>
+                            </div>
+                          </div>
+                        </div>
+                      </t>
+                    </t>
+
+                    <t t-if="not tickets">
+                      <p class="text-muted text-center small">No tickets</p>
+                    </t>
+
+                  </div>
+                </div>
+              </div>
+
+            </t>
+
+          </div>
+
         </t>
 
       </div>
