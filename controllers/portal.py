@@ -42,15 +42,41 @@ class CustomerSupportPortal(http.Controller):
         ticket = request.env['customer.support.module'].sudo().create(ticket_vals)
 
         # Step 2: Handle file attachment(s)
-        if 'attachment' in request.httprequest.files:
-            uploaded_files = request.httprequest.files.getlist('attachment')
-            for file in uploaded_files:
-                request.env['ir.attachment'].sudo().create({
-                    'name': file.filename,
-                    'datas': base64.b64encode(file.read()),
+        # attachments = []
+
+        # if 'attachment' in request.httprequest.files:
+        #     uploaded_files = request.httprequest.files.getlist('attachment')
+        #     for file in uploaded_files:
+        #         attachments.append((
+        #             file.filename,
+        #             base64.b64encode(file.read())
+        #         ))
+
+        # if attachments:
+        #     ticket.sudo().message_post(
+        #         body="Attachments uploaded by customer",
+        #         attachments=attachments
+        #     )
+        
+        files = request.httprequest.files.getlist('attachment')
+        attachments = []
+
+        for f in files:
+            if f.filename:
+                attachment = request.env['ir.attachment'].sudo().create({
+                    'name': f.filename,
+                    'type': 'binary',
+                    'datas': base64.b64encode(f.read()),
                     'res_model': 'customer.support.module',
                     'res_id': ticket.id,
+                    'mimetype': f.content_type,
                 })
+                attachments.append(attachment.id)
+
+        if attachments:
+            ticket.write({'attachment_ids': [(6, 0, attachments)]})
+
+
 
         # Step 3: Redirect to the portal ticket list
         return request.redirect('/my/tickets')

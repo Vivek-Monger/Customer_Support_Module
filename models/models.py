@@ -3,6 +3,7 @@ from odoo import models, fields, api
 
 class customer_support_module(models.Model):
     _name = 'customer.support.module'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'customer_support_module.customer_support_module'
 
  
@@ -25,16 +26,17 @@ class customer_support_module(models.Model):
     ], string="Priority", default='0')
     
     # Simple binary field for file upload
-    attachment_file = fields.Binary(string="Attach File")
-    attachment_filename = fields.Char(string="File Name")
+    # attachment_file = fields.Binary(string="Attach File")
+    # attachment_filename = fields.Char(string="File Name")
     # Computed field for attachments (alternative approach)
-    attachment_ids = fields.One2many(
-        'ir.attachment', 
-        'res_id', 
-        string='Attachments',
-        domain=[('res_model', '=', 'customer.support.module')]
+    attachment_ids = fields.Many2many(
+        'ir.attachment',
+        'customer_support_attachment_rel',
+        'ticket_id',
+        'attachment_id',
+        string="Attachments"
     )
-    
+            
     phase_id = fields.Many2one('progress.phase', 
                                string="Phase",
                                group_expand='_group_expand_phases')
@@ -85,3 +87,9 @@ class customer_support_module(models.Model):
                 vals['phase_id'] = default_phase.id if default_phase else False
 
         return super().create(vals_list)
+    
+    assigned_user_id = fields.Many2one(
+        'res.users',
+        string="Assigned Agent",
+        tracking=True,
+    )
