@@ -39,6 +39,13 @@
             </select>
           </div>
 
+          <!-- File Attachment -->
+          <div class="mb-3">
+            <label for="attachment" class="form-label">Attachments (Optional)</label>
+            <input type="file" class="form-control" name="attachment" id="attachment" multiple='1'/>
+            <small class="text-muted">You can upload multiple files. Supported formats: images, PDFs, documents.</small>
+          </div>
+
           <!-- Submit and Cancel buttons -->
           <button type="submit" class="btn btn-primary">Create Ticket</button>
           <a href="/my/tickets" class="btn btn-secondary ms-2">Cancel</a>

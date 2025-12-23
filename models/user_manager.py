@@ -14,7 +14,7 @@ class UserManager(models.Model):
     ], required=True)
     user_id = fields.Many2one('res.users', readonly=True)
 
-    DEFAULT_PASSWORD = 'changeme123'
+    DEFAULT_PASSWORD = '123'
 
     @api.model_create_multi
     def create(self, vals_list):

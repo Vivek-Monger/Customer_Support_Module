@@ -69,12 +69,10 @@
                         
                         <div class="file-upload-area">
                             <!-- Simple binary field for direct file upload -->
-                            <field name="attachment_ids" 
-                                   nolabel="1"
-                                   context="{'default_res_model': 'customer.support.module', 'default_res_id': id}"
-                                   widget="many2many_binary"
-                                   options="{'creatable': true, 'editable': true, 'deletable': true}"/>
-                            
+                            <field name="attachment_ids" widget="kanban" 
+                                domain="[('res_model','=','customer.support.module')]" 
+                                context="{'default_res_model':'customer.support.module','default_res_id':id}"/>
+                       
                             <div class="upload-instructions">
                                 <small>Supported formats: Images, PDFs, Documents (Max 5 files, 10MB each)</small>
                             </div>
@@ -93,6 +91,14 @@
         <field name="domain">[('create_uid', '=', uid)]</field>
     </record>
 
+    <record id="action_all_tickets" model="ir.actions.act_window">
+    <field name="name">All Tickets</field>
+    <field name="res_model">customer.support.module</field>
+    <field name="view_mode">list,form,kanban</field>
+    <!-- No domain → shows all tickets -->
+</record>
+
+
     <!-- Menus -->
      <menuitem
           id="menu_customer_support_root"
@@ -106,6 +112,14 @@
         name="My Tickets"
         parent="menu_customer_support_root"
         action="action_my_tickets"
+        sequence="10"
+    />
+
+    <menuitem
+        id="menu_all_tickets"
+        name="All Tickets"
+        parent="menu_customer_support_root"
+        action="action_all_tickets"
         sequence="10"
     />
 
