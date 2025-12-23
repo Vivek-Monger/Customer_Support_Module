@@ -14,7 +14,7 @@ class customer_support_module(models.Model):
         default=lambda self: self._default_ticket_id()
     )
     
-    subject = fields.Char()
+    subject = fields.Char(required = "True")
     project = fields.Many2one('customer.project')
     description = fields.Text()
     priority = fields.Selection([
@@ -85,4 +85,3 @@ class customer_support_module(models.Model):
                 vals['phase_id'] = default_phase.id if default_phase else False
 
         return super().create(vals_list)
-

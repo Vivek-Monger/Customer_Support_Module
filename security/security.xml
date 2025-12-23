@@ -1,0 +1,46 @@
+<odoo>
+  <data>
+
+    <!-- Customer Support Module Access Rights -->
+    <record id="customer_support_module_access_customer" model="ir.model.access">
+      <field name="name">Customer Access</field>
+      <field name="model_id" ref="model_customer_support_module"/>
+      <field name="group_id" ref="customer_support_module.group_customer"/>
+      <field name="perm_read" eval="1"/>
+      <field name="perm_write" eval="0"/>
+      <field name="perm_create" eval="1"/>
+      <field name="perm_unlink" eval="0"/>
+    </record>
+
+    <record id="customer_support_module_access_support_agent" model="ir.model.access">
+      <field name="name">Support Agent Access</field>
+      <field name="model_id" ref="model_customer_support_module"/>
+      <field name="group_id" ref="customer_support_module.group_support_agent"/>
+      <field name="perm_read" eval="1"/>
+      <field name="perm_write" eval="1"/>
+      <field name="perm_create" eval="0"/>
+      <field name="perm_unlink" eval="0"/>
+    </record>
+
+    <record id="customer_support_module_access_admin" model="ir.model.access">
+      <field name="name">Admin Access</field>
+      <field name="model_id" ref="model_customer_support_module"/>
+      <field name="group_id" ref="customer_support_module.group_admin"/>
+      <field name="perm_read" eval="1"/>
+      <field name="perm_write" eval="1"/>
+      <field name="perm_create" eval="1"/>
+      <field name="perm_unlink" eval="1"/>
+    </record>
+
+    <!-- User Manager Module Access Rights (Admin only) -->
+    <record id="access_user_manager_admin" model="ir.model.access">
+      <field name="name">User Manager Admin Access</field>
+      <field name="model_id" ref="model_user_manager"/>
+      <field name="group_id" ref="customer_support_module.group_admin"/>
+      <field name="perm_read" eval="1"/>
+      <field name="perm_write" eval="1"/>
+      <field name="perm_create" eval="1"/>
+      <field name="perm_unlink" eval="1"/>
+    </record>
+  </data>
+</odoo>

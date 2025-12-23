@@ -17,14 +17,17 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['base','mail','web'],
 
     # always loaded
     'data': [
+        'security/groups.xml',
+        'security/security.xml',
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/projects.xml',
         'views/phase.xml',
+        'views/user_manager.xml',
     ],
 }
 

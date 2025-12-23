@@ -2,3 +2,8 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_customer_support_module,Customer Support Modules,model_customer_support_module,base.group_user,1,1,1,1
 access_customer_project,Customer Project,model_customer_project,base.group_user,1,1,1,1
 access_progress_phase,Progress Phase,model_progress_phase,base.group_user,1,1,1,1
+
+access_customer_support_customer,Customer Support Customer,model_customer_support_module,customer_support_module.group_customer,1,0,1,0
+access_customer_support_support_agent,Customer Support Agent,model_customer_support_module,customer_support_module.group_support_agent,1,1,0,0
+
+access_user_manager_admin,User Manager Admin,model_user_manager,customer_support_module.group_admin,1,1,1,1

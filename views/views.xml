@@ -58,6 +58,7 @@
                           <field name="project"/>
                           <field name="priority"/>
                       </group>
+
                       <!-- File Upload Section - Direct file upload -->
                     <div class="attachment-section">
                         <div class="o_form_label attachment-label">Attachments (Optional)</div>
@@ -93,11 +94,12 @@
     </record>
 
     <!-- Menus -->
-    <menuitem
-        id="menu_customer_support_root"
-        name="Customer Support"
-        sequence="10"
-    />
+     <menuitem
+          id="menu_customer_support_root"
+          name="Customer Support"
+          sequence="10"
+          groups="customer_support_module.group_admin,customer_support_module.group_customer,customer_support_module.group_support_agent"/>
+
 
     <menuitem
         id="menu_my_tickets"
