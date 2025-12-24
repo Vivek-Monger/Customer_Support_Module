@@ -3,7 +3,7 @@
     <field name="name">customer.support.module.kanban</field>
     <field name="model">customer.support.module</field>
     <field name="arch" type="xml">
-        <kanban default_group_by="phase_id" create="false">
+        <kanban default_group_by="phase_id" create="false" edit="false" delete="false">
             <field name="phase_id"/>
             <field name="ticket_id"/>
             <field name="subject"/>
@@ -42,6 +42,7 @@
         name="Dashboard"
         parent="menu_customer_support_root"
         action="action_customer_support_dashboard"
-        sequence="1"/>
+        sequence="1"
+        groups="customer_support_module.group_admin"/>
 
 </odoo>
