@@ -34,6 +34,8 @@ Long description of module's purpose
         'views/portal_reporting.xml',
         'views/sla_rule.xml',
         'views/support_dashboard_view.xml',
+        'views/overview.xml',
+        'views/portal_ticket_overview.xml'
     ],
 
 }

@@ -1,4 +1,4 @@
-from odoo import http
+from odoo import fields, http
 from odoo.http import request
 import base64
 from collections import Counter
@@ -127,3 +127,61 @@ class CustomerSupportPortal(http.Controller):
         return request.render('customer_support_module.portal_customer_reporting', {
             'chart_html': chart_html
         })
+        
+    @http.route(['/my/tickets/overview'], type='http', auth='user', website=True)
+    def portal_ticket_overview(self, **kwargs):
+        """Customer Ticket Overview Dashboard"""
+
+        Ticket = request.env['customer.support.module'].sudo()
+
+        # Only customer's tickets
+        domain = [('create_uid', '=', request.env.uid)]
+        tickets = Ticket.search(domain)
+
+        open_tickets = tickets.filtered(lambda t: t.phase_id.phase != 'Done')
+        failed_tickets = tickets.filtered(lambda t: t.phase_id.phase == 'Failed')
+
+        high_priority = tickets.filtered(lambda t: t.priority == '2')
+        urgent_tickets = tickets.filtered(lambda t: t.priority == '3')
+
+        high_priority_failed = failed_tickets.filtered(lambda t: t.priority == '2')
+        urgent_failed = failed_tickets.filtered(lambda t: t.priority == '3')
+
+        today = fields.Date.today()
+        today_closed = tickets.filtered(
+            lambda t: t.phase_id.phase == 'Done'
+            and t.write_date
+            and t.write_date.date() == today
+        )
+
+        values = {
+            'total_tickets': len(tickets),
+            'open_tickets': len(open_tickets),
+
+            'high_priority': len(high_priority),
+            'urgent_tickets': len(urgent_tickets),
+
+            'failed_tickets': len(failed_tickets),
+            'failed_rate': (len(failed_tickets) / len(tickets) * 100) if tickets else 0,
+
+            'high_priority_failed': len(high_priority_failed),
+            'urgent_failed': len(urgent_failed),
+
+            'today_closed': len(today_closed),
+
+            # Placeholder SLA values (same as internal)
+            'avg_open_hours': 0.80,
+            'total_hours': 2.30,
+            'avg_high_priority_hours': 0.80,
+            'avg_urgent_hours': 0.80,
+
+            'sla_last_7_days': 100.0,
+            'daily_target': 80.0,
+            'sample_rate': 85.0,
+        }
+
+        return request.render(
+            'customer_support_module.portal_ticket_overview',
+            values
+        )
+
