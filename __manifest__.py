@@ -33,14 +33,8 @@ Long description of module's purpose
         'views/portal_create_ticket.xml',
         'views/portal_reporting.xml',
         'views/sla_rule.xml',
-        'views/faq_views.xml',
+        'views/support_dashboard_view.xml',
     ],
-    'assets': {
-        'web.assets_backend': [
-            'customer_support_module/static/src/js/faq_accordion.js',
-            'customer_support_module/static/src/xml/faq_accordion.xml',
-        ],
-    },
-    'installable': True,
+
 }
 

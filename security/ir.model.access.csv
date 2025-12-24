@@ -11,3 +11,4 @@ access_user_manager_admin,User Manager Admin,model_user_manager,customer_support
 access_customer_ticket_portal,access.customer.ticket.portal,model_customer_support_module,base.group_portal,1,0,0,0
 
 access_sla_rule_admin,access.sla.rule.admin,model_customer_support_sla_rule,customer_support_module.group_admin,1,1,1,1
+access_customer_support_dashboard,access.customer.support.dashboard,model_customer_support_dashboard,,1,1,1,1

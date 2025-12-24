@@ -1,0 +1,47 @@
+<odoo>
+    <record id="view_customer_support_kanban" model="ir.ui.view">
+    <field name="name">customer.support.module.kanban</field>
+    <field name="model">customer.support.module</field>
+    <field name="arch" type="xml">
+        <kanban default_group_by="phase_id" create="false">
+            <field name="phase_id"/>
+            <field name="ticket_id"/>
+            <field name="subject"/>
+            <field name="priority"/>
+
+            <templates>
+                <t t-name="kanban-box">
+                    <div class="oe_kanban_card oe_kanban_global_click">
+                        <strong>
+                            <field name="ticket_id"/>
+                        </strong>
+                        <div>
+                            <field name="subject"/>
+                        </div>
+                        <div>
+                            <field name="priority"/>
+                        </div>
+                    </div>
+                </t>
+            </templates>
+        </kanban>
+    </field>
+</record>
+
+
+    <record id="action_customer_support_dashboard" model="ir.actions.act_window">
+        <field name="name">Support Dashboard</field>
+        <field name="res_model">customer.support.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem
+        id="menu_customer_support_dashboard"
+        name="Dashboard"
+        parent="menu_customer_support_root"
+        action="action_customer_support_dashboard"
+        sequence="1"/>
+
+</odoo>
