@@ -1,0 +1,70 @@
+<odoo>
+  <data>
+
+    <!-- SLA Rule List View -->
+    <record id="view_sla_rule_list" model="ir.ui.view">
+      <field name="name">customer.support.sla.rule.list</field>
+      <field name="model">customer.support.sla.rule</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="priority"/>
+          <field name="resolution_time"/>
+          <field name="active"/>
+        </list>
+      </field>
+    </record>
+
+    <!-- SLA Rule Form View -->
+    <record id="view_sla_rule_form" model="ir.ui.view">
+      <field name="name">customer.support.sla.rule.form</field>
+      <field name="model">customer.support.sla.rule</field>
+      <field name="arch" type="xml">
+        <form string="SLA Rule">
+          <sheet>
+            <group>
+              <field name="priority"/>
+              <field name="resolution_time"/>
+              <field name="active"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- SLA Rule Action -->
+    <record id="action_sla_rules" model="ir.actions.act_window">
+      <field name="name">SLA Rules</field>
+      <field name="res_model">customer.support.sla.rule</field>
+      <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- System Configuration Menu -->
+    <menuitem
+      id="menu_system_configuration"
+      name="System Configuration"
+      parent="menu_customer_support_root"
+      sequence="30"
+      groups="customer_support_module.group_admin"
+    />
+
+    <!-- SLA Rules Menu -->
+    <menuitem
+      id="menu_sla_rules"
+      name="SLA Rules"
+      parent="menu_system_configuration"
+      action="action_sla_rules"
+      sequence="10"
+      groups="customer_support_module.group_admin"
+    />
+
+    <menuitem
+      id="menu_all_ticket"
+      name="All Tickets"
+      parent="menu_system_configuration"
+      action="action_all_tickets"
+      sequence="20"
+      groups="customer_support_module.group_admin"
+    />
+
+  </data>
+</odoo>

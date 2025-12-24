@@ -39,6 +39,16 @@
             </select>
           </div>
 
+          <!-- New Project Dropdown -->
+          <div class="mb-3">
+            <label for="project_id" class="form-label">Project</label>
+            <select class="form-select" name="project_id" id="project_id">
+              <t t-foreach="request.env['customer.project'].sudo().search([])" t-as="proj">
+                <option t-att-value="proj.id"><t t-esc="proj.project"/></option>
+              </t>
+            </select>
+          </div>
+
           <!-- File Attachment -->
           <div class="mb-3">
             <label for="attachment" class="form-label">Attachments (Optional)</label>

@@ -1,12 +1,10 @@
 from odoo import models, fields, api
 
-
 class customer_support_module(models.Model):
     _name = 'customer.support.module'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'customer_support_module.customer_support_module'
 
- 
     ticket_id = fields.Char(
         string="Ticket ID",
         readonly=True,
@@ -16,7 +14,7 @@ class customer_support_module(models.Model):
     )
     
     subject = fields.Char(required = "True")
-    project = fields.Many2one('customer.project')
+    project_id = fields.Many2one('customer.project', string='Project')
     description = fields.Text()
     priority = fields.Selection([
         ('0', 'Low'),

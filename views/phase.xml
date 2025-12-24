@@ -35,5 +35,6 @@
             action="progress_phase_action"
             name="Phase"
             parent="menu_customer_support_root"
-            sequence="30"/>
+            sequence="30"
+            groups="customer_support_module.group_admin"/>
 </odoo>

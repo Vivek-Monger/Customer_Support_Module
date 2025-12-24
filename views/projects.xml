@@ -40,7 +40,8 @@
                   name="Projects"
                   parent="menu_customer_support_root"
                   action="action_project"
-                  sequence="10"/>
+                  sequence="10"
+                  groups="customer_support_module.group_admin"/>
 
     </data>
 </odoo>
