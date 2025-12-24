@@ -39,7 +39,7 @@
 
     <menuitem
         id="menu_customer_support_dashboard"
-        name="Dashboard"
+        name="Tickets"
         parent="menu_customer_support_root"
         action="action_customer_support_dashboard"
         sequence="1"
