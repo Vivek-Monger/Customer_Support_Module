@@ -42,7 +42,6 @@
         name="Tickets"
         parent="menu_customer_support_root"
         action="action_customer_support_dashboard"
-        sequence="1"
-        groups="customer_support_module.group_admin"/>
+        sequence="1"/>
 
 </odoo>

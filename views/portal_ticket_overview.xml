@@ -1,0 +1,42 @@
+<odoo>
+  <template id="portal_ticket_overview" name="Ticket Overview">
+    <t t-call="portal.portal_layout">
+
+      <t t-set="breadcrumbs" t-value="[
+        ('/my', 'My Account'),
+        ('/my/tickets/overview', 'Ticket Overview')
+      ]"/>
+
+      <div class="container mt-4">
+        <h2>Ticket Overview</h2>
+
+        <h4 class="mt-4">Ticket Analytics</h4>
+        <table class="table table-bordered">
+          <tr><th>Total Tickets</th><td><t t-esc="total_tickets"/></td></tr>
+          <tr><th>Open Tickets</th><td><t t-esc="open_tickets"/></td></tr>
+          <tr><th>High Priority</th><td><t t-esc="high_priority"/></td></tr>
+          <tr><th>Urgent</th><td><t t-esc="urgent_tickets"/></td></tr>
+
+          <tr><th>Avg Open Hours</th><td><t t-esc="avg_open_hours"/></td></tr>
+          <tr><th>Total Hours</th><td><t t-esc="total_hours"/></td></tr>
+          <tr><th>Avg High Priority Hours</th><td><t t-esc="avg_high_priority_hours"/></td></tr>
+          <tr><th>Avg Urgent Hours</th><td><t t-esc="avg_urgent_hours"/></td></tr>
+
+          <tr><th>Failed Tickets</th><td><t t-esc="failed_tickets"/></td></tr>
+          <tr><th>Failed Rate (%)</th><td><t t-esc="failed_rate"/></td></tr>
+          <tr><th>High Priority Failed</th><td><t t-esc="high_priority_failed"/></td></tr>
+          <tr><th>Urgent Failed</th><td><t t-esc="urgent_failed"/></td></tr>
+        </table>
+
+        <h4 class="mt-4">My Performance</h4>
+        <table class="table table-bordered">
+          <tr><th>Today Closed</th><td><t t-esc="today_closed"/></td></tr>
+          <tr><th>SLA Last 7 Days (%)</th><td><t t-esc="sla_last_7_days"/></td></tr>
+          <tr><th>Daily Target (%)</th><td><t t-esc="daily_target"/></td></tr>
+          <tr><th>Sample (%)</th><td><t t-esc="sample_rate"/></td></tr>
+        </table>
+
+      </div>
+    </t>
+  </template>
+</odoo>

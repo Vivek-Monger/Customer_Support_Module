@@ -37,7 +37,12 @@ class customer_support_module(models.Model):
             
     phase_id = fields.Many2one('progress.phase', 
                                string="Phase",
-                               group_expand='_group_expand_phases')
+                               group_expand='_group_expand_phases', tracking=True)
+    
+    old_phase_id = fields.Many2one('progress.phase', string='From Phase')
+    new_phase_id = fields.Many2one('progress.phase', string='To Phase', required=True)
+    changed_by = fields.Many2one('res.users', string='Changed By')
+    change_date = fields.Datetime(string='Change Date', default=fields.Datetime.now)
     
     @api.model
     def _default_ticket_id(self):
@@ -75,19 +80,67 @@ class customer_support_module(models.Model):
             [('phase', '=', 'New')],
             limit=1
         )
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        default_phase = self._default_phase()
-
-        for vals in vals_list:
-            if not vals.get('phase_id'):
-                vals['phase_id'] = default_phase.id if default_phase else False
-
-        return super().create(vals_list)
     
     assigned_user_id = fields.Many2one(
         'res.users',
         string="Assigned Agent",
         tracking=True,
     )
+    
+    assigned_date = fields.Datetime(
+        string="Assigned Date",
+        readonly=True,
+        tracking=True
+    )
+
+    phase_date = fields.Datetime(
+        string="Phase Change Date",
+        readonly=True,
+        tracking=True
+    )
+
+    
+    @api.model_create_multi
+    def create(self, vals_list):
+        default_phase = self._default_phase()
+        records = super().create(vals_list)
+
+        for rec in records:
+            # Set assigned_date if assigned_user_id exists
+            if rec.assigned_user_id and not rec.assigned_date:
+                rec.assigned_date = rec.create_date
+
+            # Set phase_date for initial phase
+            if rec.phase_id and not rec.phase_date:
+                rec.phase_date = rec.create_date
+
+        return records
+
+    def write(self, vals):
+        if 'assigned_user_id' in vals:
+            vals['assigned_date'] = fields.Datetime.now()
+
+        if 'phase_id' in vals:
+            for ticket in self:
+                self.env['customer.support.phase.history'].sudo().create({
+                    'ticket_id': ticket.id,
+                    'old_phase_id': ticket.phase_id.id,
+                    'new_phase_id': vals['phase_id'],
+                    'changed_by': self.env.uid,
+                    'change_date': fields.Datetime.now()
+                })
+            vals['phase_date'] = fields.Datetime.now()
+
+        return super().write(vals)
+
+
+class CustomerSupportPhaseHistory(models.Model):
+    _name = 'customer.support.phase.history'
+    _description = 'Customer Support Phase History'
+
+    ticket_id = fields.Many2one('customer.support.module', string='Ticket', required=True)
+    old_phase_id = fields.Many2one('progress.phase', string='From Phase')
+    new_phase_id = fields.Many2one('progress.phase', string='To Phase', required=True)
+    changed_by = fields.Many2one('res.users', string='Changed By')
+    change_date = fields.Datetime(string='Change Date', default=fields.Datetime.now)
+
