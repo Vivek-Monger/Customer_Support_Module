@@ -184,4 +184,72 @@ class CustomerSupportPortal(http.Controller):
             'customer_support_module.portal_ticket_overview',
             values
         )
+        
+    @http.route(['/my/tickets/activity-log'], type='http', auth='user', website=True)
+    def portal_ticket_activity_log(self, **kwargs):
+        Ticket = request.env['customer.support.module'].sudo()
+        tickets = Ticket.search([('create_uid', '=', request.env.uid)], order='create_date desc')
 
+        activities = []
+
+        # Local function to get readable priority
+        def get_priority_label(priority):
+            return {
+                '0': 'Low',
+                '1': 'Medium',
+                '2': 'High',
+                '3': 'Urgent'
+            }.get(priority, 'Unknown')
+
+        for ticket in tickets:
+            # 1️⃣ Ticket creation
+            activities.append({
+                'date': ticket.create_date,
+                'ticket': ticket,
+                'action': 'Created',
+                'details': f'Ticket created with priority {get_priority_label(ticket.priority)}'
+            })
+
+            # 2️⃣ Assignment
+            if ticket.assigned_user_id:
+                activities.append({
+                    'date': ticket.assigned_date or ticket.create_date,
+                    'ticket': ticket,
+                    'action': 'Assigned',
+                    'details': f'Ticket assigned to {ticket.assigned_user_id.name} | Priority: {get_priority_label(ticket.priority)}'
+                })
+
+            # 3️⃣ Phase changes from history
+            phase_histories = request.env['customer.support.phase.history'].sudo().search(
+                [('ticket_id', '=', ticket.id)],
+                order='change_date'
+            )
+
+
+            if phase_histories:
+                for hist in phase_histories:
+                    activities.append({
+                        'date': hist.change_date,
+                        'ticket': ticket,
+                        'action': 'Phase Changed',
+                        'details': f'Phase changed from {hist.old_phase_id.phase if hist.old_phase_id else "New"} to {hist.new_phase_id.phase} | Priority: {get_priority_label(ticket.priority)}'
+                    })
+            else:
+                # Initial phase fallback
+                if ticket.phase_id:
+                    activities.append({
+                        'date': ticket.phase_date or ticket.create_date,
+                        'ticket': ticket,
+                        'action': 'Phase Changed',
+                        'details': f'Initial phase: {ticket.phase_id.phase} | Priority: {get_priority_label(ticket.priority)}'
+                    })
+
+        # Sort all activities by date descending
+        activities = sorted(activities, key=lambda x: x['date'], reverse=True)
+
+        return request.render(
+            'customer_support_module.portal_activity_log',
+            {'activities': activities}
+        )
+
+            

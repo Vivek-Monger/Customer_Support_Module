@@ -1,0 +1,55 @@
+<odoo>
+  <template id="portal_activity_log" name="Ticket Activity Log">
+    <t t-call="portal.portal_layout">
+
+      <t t-set="breadcrumbs" t-value="[
+        ('/my', 'My Account'),
+        ('/my/tickets', 'Customer Support / My Tickets'),
+        ('/my/tickets/activity-log', 'Activity Log')
+      ]"/>
+
+      <div class="container mt-4">
+        <h2>Activity Log</h2>
+
+        <t t-if="activities">
+          <ul class="timeline list-unstyled">
+            <t t-foreach="activities" t-as="act">
+              <li class="mb-3 position-relative ps-4">
+                <!-- Timeline Dot -->
+                <span t-att-class="'position-absolute top-0 start-0 translate-middle p-2 rounded-circle ' +
+                                    ('bg-success' if act['action']=='Created' else
+                                     'bg-primary' if act['action']=='Assigned' else
+                                     'bg-warning' if act['action']=='Phase Changed' else '')"
+                      style="width: 1rem; height: 1rem;"></span>
+
+                <div>
+                  <strong>Ticket <t t-esc="act['ticket'].ticket_id"/></strong>
+                  - <span t-att-class="'badge ' +
+                                     ('bg-success' if act['action']=='Created' else
+                                      'bg-primary' if act['action']=='Assigned' else
+                                      'bg-warning' if act['action']=='Phase Changed' else '')">
+                    <t t-esc="act['action']"/>
+                  </span>
+                </div>
+
+                <div class="text-muted small">
+                  <t t-esc="act['date'].strftime('%Y-%m-%d %H:%M')"/>
+                </div>
+
+                <div class="ms-3">
+                  <small class="text-secondary"><t t-esc="act['details']"/></small>
+                </div>
+              </li>
+            </t>
+          </ul>
+        </t>
+
+        <t t-if="not activities">
+          <p class="text-muted">No activities found.</p>
+        </t>
+
+      </div>
+
+    </t>
+  </template>
+</odoo>
