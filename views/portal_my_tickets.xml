@@ -2,7 +2,6 @@
   <template id="portal_my_tickets" name="My Tickets">
     <t t-call="portal.portal_layout">
 
-      <!-- Breadcrumbs -->
       <t t-set="breadcrumbs" t-value="[
         ('/my', 'My Account'),
         ('/my/tickets', 'Customer Support / My Tickets')
@@ -52,7 +51,7 @@
                     <span t-if="ticket.priority == '3'">Urgent</span>
                   </td>
                   <td>
-                    <t t-esc="ticket.phase_id.phase if ticket.phase_id else ''"/>
+                    <t t-esc="phase_labels.get(ticket.phase_id, '')"/>
                   </td>
                 </tr>
               </t>
@@ -72,19 +71,19 @@
 
             <t t-foreach="phase_map.items()" t-as="phase_item">
               <t t-set="phase" t-value="phase_item[0]"/>
-              <t t-set="tickets" t-value="phase_item[1]"/>
+              <t t-set="phase_tickets" t-value="phase_item[1]"/>
 
               <div class="col-md-3">
                 <div class="card shadow-sm mb-3">
 
                   <div class="card-header text-center fw-bold bg-light">
-                    <t t-esc="phase.phase"/>
+                    <t t-esc="phase_labels.get(phase)"/>
                   </div>
 
                   <div class="card-body p-2">
 
-                    <t t-if="tickets">
-                      <t t-foreach="tickets" t-as="ticket">
+                    <t t-if="phase_tickets">
+                      <t t-foreach="phase_tickets" t-as="ticket">
                         <div class="card mb-2">
                           <div class="card-body p-2">
                             <strong><t t-esc="ticket.ticket_id"/></strong>
@@ -103,7 +102,7 @@
                       </t>
                     </t>
 
-                    <t t-if="not tickets">
+                    <t t-if="not phase_tickets">
                       <p class="text-muted text-center small">No tickets</p>
                     </t>
 
