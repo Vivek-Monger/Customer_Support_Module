@@ -35,14 +35,38 @@ class customer_support_module(models.Model):
         string="Attachments"
     )
             
-    phase_id = fields.Many2one('progress.phase', 
-                               string="Phase",
-                               group_expand='_group_expand_phases', tracking=True)
+    phase_id = fields.Selection(
+        [
+            ('new', 'New'),
+            ('open', 'Open'),
+            ('in_progress', 'In Progress'),
+            ('resolved', 'Resolved'),
+            ('closed', 'Closed'),
+        ],
+        string="Phase",
+        default='new',
+        tracking=True,
+        group_expand='_group_expand_phase_id'
+    )
+
+    @api.model
+    def _group_expand_phase_id(self, states, domain, order):
+        return [key for key, label in self._fields['phase_id'].selection]
+
     
-    old_phase_id = fields.Many2one('progress.phase', string='From Phase')
-    new_phase_id = fields.Many2one('progress.phase', string='To Phase', required=True)
+    old_phase_id = fields.Selection(
+        selection=lambda self: self.env['customer.support.module']._fields['phase_id'].selection,
+        string="From Phase"
+    )
+
+    new_phase_id = fields.Selection(
+        selection=lambda self: self.env['customer.support.module']._fields['phase_id'].selection,
+        string="To Phase",
+        required=True
+    )
+
     changed_by = fields.Many2one('res.users', string='Changed By')
-    change_date = fields.Datetime(string='Change Date', default=fields.Datetime.now)
+    change_date = fields.Datetime(default=fields.Datetime.now)
     
     @api.model
     def _default_ticket_id(self):
@@ -70,16 +94,6 @@ class customer_support_module(models.Model):
             
         return f"#DC-{next_seq:04d}"
     
-    @api.model
-    def _group_expand_phases(self, groups, domain):
-        return self.env['progress.phase'].search([])
-    
-    @api.model
-    def _default_phase(self):
-        return self.env['progress.phase'].search(
-            [('phase', '=', 'New')],
-            limit=1
-        )
     
     assigned_user_id = fields.Many2one(
         'res.users',
@@ -102,7 +116,7 @@ class customer_support_module(models.Model):
     
     @api.model_create_multi
     def create(self, vals_list):
-        default_phase = self._default_phase()
+        # default_phase = self._default_phase()
         records = super().create(vals_list)
 
         for rec in records:
@@ -117,17 +131,14 @@ class customer_support_module(models.Model):
         return records
 
     def write(self, vals):
-        if 'assigned_user_id' in vals:
-            vals['assigned_date'] = fields.Datetime.now()
-
         if 'phase_id' in vals:
             for ticket in self:
                 self.env['customer.support.phase.history'].sudo().create({
                     'ticket_id': ticket.id,
-                    'old_phase_id': ticket.phase_id.id,
+                    'old_phase_id': ticket.phase_id,
                     'new_phase_id': vals['phase_id'],
                     'changed_by': self.env.uid,
-                    'change_date': fields.Datetime.now()
+                    'change_date': fields.Datetime.now(),
                 })
             vals['phase_date'] = fields.Datetime.now()
 
@@ -139,8 +150,17 @@ class CustomerSupportPhaseHistory(models.Model):
     _description = 'Customer Support Phase History'
 
     ticket_id = fields.Many2one('customer.support.module', string='Ticket', required=True)
-    old_phase_id = fields.Many2one('progress.phase', string='From Phase')
-    new_phase_id = fields.Many2one('progress.phase', string='To Phase', required=True)
+    old_phase_id = fields.Selection(
+        selection=lambda self: self.env['customer.support.module']._fields['phase_id'].selection,
+        string="From Phase"
+    )
+
+    new_phase_id = fields.Selection(
+        selection=lambda self: self.env['customer.support.module']._fields['phase_id'].selection,
+        string="To Phase",
+        required=True
+    )
+
     changed_by = fields.Many2one('res.users', string='Changed By')
-    change_date = fields.Datetime(string='Change Date', default=fields.Datetime.now)
+    change_date = fields.Datetime(default=fields.Datetime.now)
 

@@ -50,14 +50,14 @@ class CustomerSupportDashboard(models.Model):
         last_7_days = now - timedelta(days=7)
 
         tickets = Ticket.search([])
-        open_tickets = Ticket.search([('phase_id.phase', '!=', 'Done')])
-        failed = Ticket.search([('phase_id.phase', '=', 'Failed')])
+        open_tickets = Ticket.search([('phase_id', '!=', 'Done')])
+        failed = Ticket.search([('phase_id', '=', 'Failed')])
 
         high_priority = Ticket.search([('priority', '=', '2')])
         urgent = Ticket.search([('priority', '=', '3')])
 
         today_closed = Ticket.search([
-            ('phase_id.phase', '=', 'Done'),
+            ('phase_id', '=', 'Done'),
             ('write_date', '>=', today_start)
         ])
 

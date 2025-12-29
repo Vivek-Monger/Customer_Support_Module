@@ -26,7 +26,7 @@ Long description of module's purpose
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/projects.xml',
-        'views/phase.xml',
+        # 'views/phase.xml',
         'views/user_manager.xml',
         'views/portal_menu.xml',
         'views/portal_my_tickets.xml',
