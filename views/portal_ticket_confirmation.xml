@@ -1,0 +1,53 @@
+<odoo>
+<template id="portal_ticket_confirmation" name="Ticket Confirmation">
+    <t t-call="website.layout">
+        <div class="container mt-4">
+
+            <h3>Confirm Your Ticket</h3>
+
+            <div class="card p-3 mb-3">
+                <p><strong>Subject:</strong> <t t-esc="subject"/></p>
+                <p><strong>Description:</strong></p>
+                <p t-esc="description"/>
+                <p>
+                    <strong>Priority:</strong>
+                    <span class="badge bg-info">
+                        <t t-esc="priority_label"/>
+                    </span>
+                </p>
+            </div>
+
+            <!-- Confirm -->
+            <form action="/my/tickets/create/final" method="post" class="d-inline">
+
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                <input type="hidden" name="subject" t-att-value="subject"/>
+                <input type="hidden" name="description" t-att-value="description"/>
+                <input type="hidden" name="priority" t-att-value="priority"/>
+                <input type="hidden" name="project_id" t-att-value="project_id"/>
+
+                <button class="btn btn-success">
+                    Confirm &amp; Create Ticket
+                </button>
+            </form>
+
+            <!-- Go Back -->
+            <form action="/my/tickets/create" method="post" class="d-inline ms-2">
+
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                
+                <input type="hidden" name="subject" t-att-value="subject"/>
+                <input type="hidden" name="description" t-att-value="description"/>
+                <input type="hidden" name="priority" t-att-value="priority"/>
+                <input type="hidden" name="project_id" t-att-value="project_id"/>
+
+                <button class="btn btn-secondary">
+                    Go Back to Edit
+                </button>
+            </form>
+
+        </div>
+    </t>
+</template>
+</odoo>

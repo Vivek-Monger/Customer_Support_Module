@@ -40,11 +40,25 @@ class CustomerSupportPortal(http.Controller):
 
     # Create Ticket (Form)
 
-    @http.route(['/my/tickets/create'], type='http', auth='user', website=True)
-    def portal_create_ticket(self, **kwargs):
+    @http.route(
+        '/my/tickets/create',
+        type='http',
+        auth='user',
+        website=True,
+        methods=['GET', 'POST']
+    )
+    def portal_create_ticket(self, **post):
+
         return request.render(
-            'customer_support_module.portal_create_ticket'
+            'customer_support_module.portal_create_ticket',
+            {
+                'subject': post.get('subject'),
+                'description': post.get('description'),
+                'priority': post.get('priority'),
+                'project_id': post.get('project_id'),
+            }
         )
+
 
     # Create Ticket (Submit)
 
