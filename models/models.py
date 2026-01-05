@@ -61,7 +61,8 @@ class customer_support_module(models.Model):
     new_phase_id = fields.Selection(
         selection=lambda self: self.env['customer.support.module']._fields['phase_id'].selection,
         string="To Phase",
-        required=True
+        required=True,
+        default="new"
     )
 
     changed_by = fields.Many2one('res.users', string='Changed By')
