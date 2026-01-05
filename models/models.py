@@ -50,9 +50,8 @@ class customer_support_module(models.Model):
     )
 
     @api.model
-    def _group_expand_phase_id(self, states, domain, order):
-        return [key for key, label in self._fields['phase_id'].selection]
-
+    def _group_expand_phase_id(self, values, domain, order=None):
+        return ['new', 'open', 'in_progress', 'resolved', 'closed']
     
     old_phase_id = fields.Selection(
         selection=lambda self: self.env['customer.support.module']._fields['phase_id'].selection,
@@ -149,7 +148,7 @@ class CustomerSupportPhaseHistory(models.Model):
     _name = 'customer.support.phase.history'
     _description = 'Customer Support Phase History'
 
-    ticket_id = fields.Many2one('customer.support.module', string='Ticket', required=True)
+    ticket_id = fields.Many2one('customer.support.module', string='Ticket',ondelete = "cascade", required=True)
     old_phase_id = fields.Selection(
         selection=lambda self: self.env['customer.support.module']._fields['phase_id'].selection,
         string="From Phase"
@@ -163,4 +162,3 @@ class CustomerSupportPhaseHistory(models.Model):
 
     changed_by = fields.Many2one('res.users', string='Changed By')
     change_date = fields.Datetime(default=fields.Datetime.now)
-

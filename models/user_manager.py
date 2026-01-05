@@ -20,6 +20,9 @@ class UserManager(models.Model):
     def create(self, vals_list):
         records = self.env['user.manager']
 
+        portal_group = self.env.ref('base.group_portal')
+        internal_group = self.env.ref('base.group_user')
+
         for vals in vals_list:
             name = vals.get('name')
             email = vals.get('email')
@@ -29,45 +32,57 @@ class UserManager(models.Model):
                 records |= super().create(vals)
                 continue
 
+            # Prevent duplicate users
             if self.env['res.users'].sudo().search([('login', '=', email)], limit=1):
                 raise ValidationError(f"User with email {email} already exists.")
 
-            # Create user (gets internal group by default)
-            user = self.env['res.users'].sudo().create({
-                'name': name,
-                'login': email,
-                'email': email,
-            })
-
+            # --------------------------------------------------
+            # CUSTOMER → PORTAL USER
+            # --------------------------------------------------
             if role == 'customer':
                 partner = self.env['res.partner'].sudo().create({
                     'name': name,
                     'email': email,
                 })
 
-                user.sudo().write({
+                user = self.env['res.users'].sudo().create({
+                    'name': name,
+                    'login': email,
+                    'email': email,
                     'partner_id': partner.id,
                     'share': True,
                 })
 
-                # Remove internal user group
-                self.env.ref('base.group_user').sudo().write({
+                # ✅ Odoo 19 way: manage groups from res.groups
+                internal_group.sudo().write({
                     'user_ids': [(3, user.id)]
                 })
-
-                # Add portal group
-                self.env.ref('base.group_portal').sudo().write({
+                portal_group.sudo().write({
                     'user_ids': [(4, user.id)]
                 })
 
+            # --------------------------------------------------
+            # SUPPORT AGENT → INTERNAL USER
+            # --------------------------------------------------
             elif role == 'support_agent':
-                # Internal user → nothing else required
-                pass
+                user = self.env['res.users'].sudo().create({
+                    'name': name,
+                    'login': email,
+                    'email': email,
+                    'share': False,
+                })
+
+                portal_group.sudo().write({
+                    'user_ids': [(3, user.id)]
+                })
+                internal_group.sudo().write({
+                    'user_ids': [(4, user.id)]
+                })
 
             else:
                 raise ValidationError("Invalid role selected")
 
-            # ✅ SET DEFAULT PASSWORD (Odoo 19 compatible)
+            # Set default password
             user.sudo().write({'password': self.DEFAULT_PASSWORD})
 
             vals['user_id'] = user.id
