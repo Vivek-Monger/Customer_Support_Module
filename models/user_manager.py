@@ -85,6 +85,27 @@ class UserManager(models.Model):
             # Set default password
             user.sudo().write({'password': self.DEFAULT_PASSWORD})
 
+            # Send welcome email to customer
+            if role == 'customer':
+                mail_values = {
+                    'subject': 'Welcome to Customer Support Portal',
+                    'body_html': f"""
+                        <p>Dear {name},</p>
+                        <p>Welcome to our Customer Support Portal!</p>
+                        <p>Your account has been created successfully.</p>
+                        <p><strong>Login Details:</strong></p>
+                        <ul>
+                            <li>Email: {email}</li>
+                            <li>Password: {self.DEFAULT_PASSWORD}</li>
+                        </ul>
+                        <p>Please log in and change your password for security.</p>
+                        <p>Best regards,<br>Customer Support Team</p>
+                    """,
+                    'email_to': email,
+                    'email_from': '02220149.cst@rub.edu.bt',
+                }
+                self.env['mail.mail'].sudo().create(mail_values).send()
+
             vals['user_id'] = user.id
             records |= super().create(vals)
 

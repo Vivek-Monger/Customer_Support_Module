@@ -63,6 +63,7 @@ class CustomerSupportPortal(http.Controller):
             'priority': kwargs.get('priority') or '0',
             'create_uid': request.env.uid,
             'phase_id': 'new',
+            'new_phase_id':'new',
         }
 
         project_id = kwargs.get('project_id')
