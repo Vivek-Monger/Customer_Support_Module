@@ -2,6 +2,9 @@ from odoo import fields, http
 from odoo.http import request
 import base64
 from collections import Counter
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class CustomerSupportPortal(http.Controller):
@@ -60,7 +63,7 @@ class CustomerSupportPortal(http.Controller):
         )
 
 
-    # Create Ticket (Submit)
+    # Create Ticket (Submit) - FIXED FOR ATTACHMENTS
 
     @http.route(
         ['/my/tickets/create/submit'],
@@ -71,6 +74,9 @@ class CustomerSupportPortal(http.Controller):
     )
     def portal_create_ticket_submit(self, **kwargs):
 
+        _logger.info("="*80)
+        _logger.info("TICKET CREATION STARTED")
+        
         ticket_vals = {
             'subject': kwargs.get('subject'),
             'description': kwargs.get('description'),
@@ -85,25 +91,40 @@ class CustomerSupportPortal(http.Controller):
             ticket_vals['project_id'] = int(project_id)
 
         ticket = request.env['customer.support.module'].sudo().create(ticket_vals)
+        _logger.info(f"✓ Ticket created: ID={ticket.id}, Ticket#={ticket.ticket_id}")
 
+        # Handle file attachments - FIXED VERSION
         files = request.httprequest.files.getlist('attachment')
+        _logger.info(f"Files received: {len(files)}")
+        
         attachments = []
 
         for f in files:
-            if f.filename:
-                attachment = request.env['ir.attachment'].sudo().create({
-                    'name': f.filename,
-                    'type': 'binary',
-                    'datas': base64.b64encode(f.read()),
-                    'res_model': 'customer.support.module',
-                    'res_id': ticket.id,
-                    'mimetype': f.content_type,
-                })
-                attachments.append(attachment.id)
+            _logger.info(f"Processing file: {f.filename if f else 'None'}")
+            if f and f.filename:
+                try:
+                    file_content = f.read()
+                    _logger.info(f"  File size: {len(file_content)} bytes")
+                    
+                    if file_content:
+                        attachment = request.env['ir.attachment'].sudo().create({
+                            'name': f.filename,
+                            'type': 'binary',
+                            'datas': base64.b64encode(file_content),
+                            'res_model': 'customer.support.module',
+                            'res_id': ticket.id,
+                            'mimetype': f.content_type,
+                        })
+                        attachments.append(attachment.id)
+                        _logger.info(f"  ✓ Attachment created: ID={attachment.id}")
+                except Exception as e:
+                    _logger.error(f"  ✗ Error uploading file: {str(e)}")
 
         if attachments:
             ticket.write({'attachment_ids': [(6, 0, attachments)]})
+            _logger.info(f"✓ Linked {len(attachments)} attachments to ticket")
 
+        _logger.info("="*80)
         return request.redirect('/my/tickets')
 
     # ---------------------------------------------------------
@@ -360,3 +381,82 @@ class CustomerSupportPortal(http.Controller):
         }
         
         return request.render('customer_support_module.portal_faq_detail', values)
+    
+    # Notification
+
+    @http.route(['/my/notifications'], type='http', auth='user', website=True)
+    def portal_notifications(self, **kwargs):
+        """Display all notifications for the current user"""
+        
+        Notification = request.env['customer.support.notification'].sudo()
+        
+        # Get all notifications for current user
+        notifications = Notification.search(
+            [('user_id', '=', request.env.uid)],
+            order='create_date desc'
+        )
+        
+        # Separate read and unread
+        unread_notifications = notifications.filtered(lambda n: not n.is_read)
+        read_notifications = notifications.filtered(lambda n: n.is_read)
+        
+        values = {
+            'notifications': notifications,
+            'unread_notifications': unread_notifications,
+            'read_notifications': read_notifications,
+            'unread_count': len(unread_notifications),
+        }
+        
+        return request.render('customer_support_module.portal_notifications', values)
+
+
+    @http.route(['/my/notifications/mark-read/<int:notification_id>'], type='http', auth='user', website=True)
+    def portal_notification_mark_read(self, notification_id, **kwargs):
+        """Mark a single notification as read and redirect to ticket"""
+        
+        Notification = request.env['customer.support.notification'].sudo()
+        notification = Notification.browse(notification_id)
+        
+        if notification.exists() and notification.user_id.id == request.env.uid:
+            notification.action_mark_as_read()
+            
+            # Redirect to tickets page
+            # return request.redirect('/my/tickets')
+        
+        return request.redirect('/my/notifications')
+
+
+    @http.route(['/my/notifications/mark-all-read'], type='http', auth='user', website=True)
+    def portal_notification_mark_all_read(self, **kwargs):
+        """Mark all notifications as read"""
+        
+        Notification = request.env['customer.support.notification'].sudo()
+        Notification.action_mark_all_as_read(request.env.uid)
+        
+        return request.redirect('/my/notifications')
+
+
+    @http.route(['/my/notifications/count'], type='json', auth='user')
+    def portal_notification_count(self, **kwargs):
+        """Get unread notification count (for AJAX calls if needed)"""
+        
+        Notification = request.env['customer.support.notification'].sudo()
+        count = Notification.search_count([
+            ('user_id', '=', request.env.uid),
+            ('is_read', '=', False)
+        ])
+        
+        return {'count': count}
+
+
+    @http.route(['/my/notifications/delete/<int:notification_id>'], type='http', auth='user', website=True)
+    def portal_notification_delete(self, notification_id, **kwargs):
+        """Delete a notification"""
+        
+        Notification = request.env['customer.support.notification'].sudo()
+        notification = Notification.browse(notification_id)
+        
+        if notification.exists() and notification.user_id.id == request.env.uid:
+            notification.unlink()
+        
+        return request.redirect('/my/notifications')

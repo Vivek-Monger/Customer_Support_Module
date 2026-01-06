@@ -7,3 +7,4 @@ from . import sla_rule
 from . import support_dashboard
 from . import overview
 from . import faq
+from . import notification

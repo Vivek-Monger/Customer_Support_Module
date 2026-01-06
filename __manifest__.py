@@ -39,6 +39,8 @@ Long description of module's purpose
         'views/portal_ticket_confirmation.xml',
         'views/portal_faq.xml',
         'views/faq_views.xml',
+        'views/notification_views.xml',
+        'views/portal_notification.xml',
     ],
 
 }

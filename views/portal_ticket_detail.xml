@@ -1,0 +1,26 @@
+<odoo>
+    <template id="portal_ticket_detail" name="Portal Ticket Detail">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-4">
+                <h3>
+                    <i class="fa fa-ticket"></i>
+                    Ticket <t t-esc="ticket.ticket_id"/>
+                </h3>
+
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <p><strong>Subject:</strong> <t t-esc="ticket.subject"/></p>
+                        <p><strong>Status:</strong> <t t-esc="ticket.phase_id"/></p>
+                        <p><strong>Priority:</strong> <t t-esc="ticket.priority"/></p>
+                        <p><strong>Description:</strong></p>
+                        <p t-esc="ticket.description"/>
+                    </div>
+                </div>
+
+                <a href="/my/tickets" class="btn btn-secondary mt-3">
+                    ← Back to My Tickets
+                </a>
+            </div>
+        </t>
+    </template>
+</odoo>

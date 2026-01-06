@@ -1,68 +1,68 @@
 <odoo>
   <template id="portal_create_ticket" name="Create Ticket">
     <t t-call="portal.portal_layout">
-
       <!-- Breadcrumbs -->
       <t t-set="breadcrumbs" t-value="[
         ('/my', 'My Account'),
         ('/my/tickets', 'Customer Support / My Tickets'),
         ('/my/tickets/create', 'Create Ticket')
       ]"/>
-
+      
       <div class="container mt-4">
         <h2>Create a New Ticket</h2>
-
-        <form action="/my/tickets/create/confirm" method="post" class="mt-3"
+        
+        <form action="/my/tickets/create/submit" 
+              method="post" 
+              class="mt-3"
               enctype="multipart/form-data">
-
+          
           <!-- CSRF Token -->
           <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-
+          
           <!-- Subject -->
           <div class="mb-3">
-            <label for="subject" class="form-label">Subject</label>
+            <label for="subject" class="form-label">Subject <span class="text-danger">*</span></label>
             <input type="text"
                    class="form-control"
                    name="subject"
                    id="subject"
-                   required="1"
-                   t-att-value="subject or ''"/>
+                   required="required"/>
           </div>
-
+          
           <!-- Description -->
           <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
+            <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
             <textarea class="form-control"
                       name="description"
                       id="description"
                       rows="5"
-                      required="1"><t t-esc="description or ''"/></textarea>
+                      required="required"></textarea>
           </div>
-
+          
           <!-- Priority -->
           <div class="mb-3">
             <label for="priority" class="form-label">Priority</label>
             <select class="form-select" name="priority" id="priority">
-              <option value="0" t-att-selected="priority == '0'">Low</option>
-              <option value="1" t-att-selected="priority == '1'">Medium</option>
-              <option value="2" t-att-selected="priority == '2'">High</option>
-              <option value="3" t-att-selected="priority == '3'">Urgent</option>
+              <option value="0">Low</option>
+              <option value="1">Medium</option>
+              <option value="2">High</option>
+              <option value="3">Urgent</option>
             </select>
           </div>
-
+          
           <!-- Project -->
           <div class="mb-3">
             <label for="project_id" class="form-label">Project</label>
             <select class="form-select" name="project_id" id="project_id">
+              <option value="">-- Select Project --</option>
               <t t-foreach="request.env['customer.project'].sudo().search([])" t-as="proj">
-                <option t-att-value="proj.id"
-                        t-att-selected="project_id and int(project_id) == proj.id">
+                <option t-att-value="proj.id">
                   <t t-esc="proj.project"/>
                 </option>
               </t>
             </select>
           </div>
-
+          
           <!-- Attachments -->
           <div class="mb-3">
             <label for="attachment" class="form-label">Attachments (Optional)</label>
@@ -70,23 +70,23 @@
                    class="form-control"
                    name="attachment"
                    id="attachment"
-                   multiple="1"/>
+                   multiple="multiple"/>
             <small class="text-muted">
-              You can upload multiple files. Supported formats: images, PDFs, documents.
+              You can upload multiple files.
             </small>
           </div>
-
+          
           <!-- Buttons -->
-          <button type="submit" class="btn btn-primary">
-            Create Ticket
-          </button>
-          <a href="/my/tickets" class="btn btn-secondary ms-2">
-            Cancel
-          </a>
-
+          <div class="mt-4">
+            <button type="submit" class="btn btn-primary">
+              Create Ticket
+            </button>
+            <a href="/my/tickets" class="btn btn-secondary ms-2">
+              Cancel
+            </a>
+          </div>
         </form>
       </div>
-
     </t>
   </template>
 </odoo>

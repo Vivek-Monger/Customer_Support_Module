@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Notification list View -->
+    <record id="view_customer_support_notification_list" model="ir.ui.view">
+        <field name="name">customer.support.notification.list</field>
+        <field name="model">customer.support.notification</field>
+        <field name="arch" type="xml">
+            <list string="Notifications" decoration-bf="not is_read">
+                <field name="create_date" string="Date"/>
+                <field name="user_id"/>
+                <field name="ticket_id"/>
+                <field name="title"/>
+                <field name="notification_type"/>
+                <field name="is_read" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Notification Form View -->
+    <record id="view_customer_support_notification_form" model="ir.ui.view">
+        <field name="name">customer.support.notification.form</field>
+        <field name="model">customer.support.notification</field>
+        <field name="arch" type="xml">
+            <form string="Notification">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="ticket_id"/>
+                            <field name="notification_type"/>
+                        </group>
+                        <group>
+                            <field name="is_read"/>
+                            <field name="read_date" invisible="not is_read"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="title"/>
+                        <field name="message"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Notification Search View 
+    <record id="view_customer_support_notification_search" model="ir.ui.view">
+        <field name="name">customer.support.notification.search</field>
+        <field name="model">customer.support.notification</field>
+        <field name="arch" type="xml">
+            <search string="Search Notifications">
+                <field name="title"/>
+                <field name="user_id"/>
+                <field name="ticket_id"/>
+                <field name="notification_type"/>
+                <separator/>
+                <filter string="Unread" name="unread" domain="[('is_read', '=', False)]"/>
+                <filter string="Read" name="read" domain="[('is_read', '=', True)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="User" name="group_user" context="{'group_by': 'user_id'}"/>
+                    <filter string="Type" name="group_type" context="{'group_by': 'notification_type'}"/>
+                    <filter string="Read Status" name="group_read" context="{'group_by': 'is_read'}"/>
+                </group>
+            </search>
+        </field>
+    </record> -->
+
+    <!-- Notification Action -->
+    <record id="action_customer_support_notification" model="ir.actions.act_window">
+        <field name="name">Notifications</field>
+        <field name="res_model">customer.support.notification</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_unread': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No notifications yet
+            </p>
+            <p>
+                Notifications will appear here when ticket statuses change.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_customer_support_notification"
+              name="Notifications"
+              parent="customer_support_module.menu_customer_support_root"
+              action="action_customer_support_notification"
+              sequence="40"/>
+</odoo>

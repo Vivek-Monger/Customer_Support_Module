@@ -151,6 +151,7 @@ class customer_support_module(models.Model):
                 ticket._send_status_change_email(ticket.phase_id, vals['phase_id'])
                 # ==================================================================
                 
+                
             vals['phase_date'] = fields.Datetime.now()
 
         result = super().write(vals)
@@ -350,3 +351,15 @@ class CustomerSupportPhaseHistory(models.Model):
 
     changed_by = fields.Many2one('res.users', string='Changed By')
     change_date = fields.Datetime(default=fields.Datetime.now)
+    
+    def action_view_activity_log(self):
+        """Action to view activity log for this ticket"""
+        self.ensure_one()
+        return {
+            'name': f'Activity Log - {self.ticket_id}',
+            'type': 'ir.actions.act_window',
+            'res_model': 'customer.support.activity.log',
+            'view_mode': 'tree,form',
+            'domain': [('ticket_id', '=', self.id)],
+            'context': {'default_ticket_id': self.id},
+        }
