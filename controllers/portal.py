@@ -285,3 +285,78 @@ class CustomerSupportPortal(http.Controller):
             'customer_support_module.portal_activity_log',
             {'activities': activities}
         )
+    # Add these routes to your existing CustomerSupportPortal class in portal.py
+
+    @http.route(['/my/faq', '/my/faq/category/<int:category_id>'], type='http', auth='user', website=True)
+    def portal_faq(self, category_id=None, search=None, **kwargs):
+        """Display FAQ page with categories and questions"""
+        
+        FAQ = request.env['customer.support.faq'].sudo()
+        Category = request.env['customer.support.faq.category'].sudo()
+        
+        # Get all active categories with active FAQs
+        categories = Category.search([('active', '=', True)])
+        
+        # Filter FAQs based on category or search
+        domain = [('active', '=', True)]
+        
+        if category_id:
+            domain.append(('category_id', '=', category_id))
+        
+        if search:
+            domain.append('|')
+            domain.append(('name', 'ilike', search))
+            domain.append(('answer', 'ilike', search))
+        
+        faqs = FAQ.search(domain)
+        
+        # Group FAQs by category
+        faq_by_category = {}
+        for category in categories:
+            category_faqs = faqs.filtered(lambda f: f.category_id.id == category.id)
+            if category_faqs:
+                faq_by_category[category] = category_faqs
+        
+        values = {
+            'categories': categories,
+            'faq_by_category': faq_by_category,
+            'selected_category_id': category_id,
+            'search_term': search or '',
+            'total_faqs': len(faqs),
+        }
+        
+        return request.render('customer_support_module.portal_faq', values)
+
+
+    @http.route(['/my/faq/view/<int:faq_id>'], type='http', auth='user', website=True)
+    def portal_faq_view(self, faq_id, **kwargs):
+        """Display single FAQ with expanded answer and increment view count"""
+        
+        FAQ = request.env['customer.support.faq'].sudo()
+        Category = request.env['customer.support.faq.category'].sudo()
+        
+        faq = FAQ.browse(faq_id)
+        
+        if not faq.exists() or not faq.active:
+            return request.redirect('/my/faq')
+        
+        # Increment view count
+        faq.write({'view_count': faq.view_count + 1})
+        
+        # Get all categories for sidebar
+        categories = Category.search([('active', '=', True)])
+        
+        # Get all FAQs in the same category
+        category_faqs = FAQ.search([
+            ('active', '=', True),
+            ('category_id', '=', faq.category_id.id)
+        ])
+        
+        values = {
+            'categories': categories,
+            'selected_faq': faq,
+            'category_faqs': category_faqs,
+            'selected_category_id': faq.category_id.id,
+        }
+        
+        return request.render('customer_support_module.portal_faq_detail', values)

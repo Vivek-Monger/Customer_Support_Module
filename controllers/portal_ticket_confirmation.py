@@ -56,6 +56,7 @@ class CustomerSupportTicketConfirmation(http.Controller):
             'priority': post.get('priority') or '0',
             'create_uid': request.env.uid,
             'phase_id': 'new',
+            'new_phase_id':'new',
         }
 
         project_id = post.get('project_id')

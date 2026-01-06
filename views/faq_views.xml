@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- FAQ list View -->
+    <record id="view_customer_support_faq_list" model="ir.ui.view">
+        <field name="name">customer.support.faq.list</field>
+        <field name="model">customer.support.faq</field>
+        <field name="arch" type="xml">
+            <list string="FAQs" default_order="sequence, id">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="view_count"/>
+                <field name="active" widget="boolean_toggle"/>
+                <field name="created_by"/>
+                <field name="last_updated"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- FAQ Form View -->
+    <record id="view_customer_support_faq_form" model="ir.ui.view">
+        <field name="name">customer.support.faq.form</field>
+        <field name="model">customer.support.faq</field>
+        <field name="arch" type="xml">
+            <form string="FAQ">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options="{'terminology': 'archive'}"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="Enter your question here..."/>
+                            <field name="category_id" options="{'no_create': False}"/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="view_count" readonly="1"/>
+                            <field name="created_by" readonly="1"/>
+                            <field name="last_updated" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="answer" widget="html" placeholder="Enter the answer here..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- FAQ Search View 
+    <record id="view_customer_support_faq_search" model="ir.ui.view">
+        <field name="name">customer.support.faq.search</field>
+        <field name="model">customer.support.faq</field>
+        <field name="arch" type="xml">
+            <search string="Search FAQs">
+                <field name="name"/>
+                <field name="category_id"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Category" name="group_category" context="{'group_by': 'category_id'}"/>
+                    <filter string="Created By" name="group_created_by" context="{'group_by': 'created_by'}"/>
+                </group>
+            </search>
+        </field>
+    </record> -->
+
+    <!-- FAQ Action 
+    <record id="action_customer_support_faq" model="ir.actions.act_window">
+        <field name="name">FAQs</field>
+        <field name="res_model">customer.support.faq</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first FAQ
+            </p>
+            <p>
+                Add frequently asked questions to help customers find answers quickly.
+            </p>
+        </field>
+    </record> -->
+
+    <!-- FAQ Category list View -->
+    <record id="view_customer_support_faq_category_list" model="ir.ui.view">
+        <field name="name">customer.support.faq.category.list</field>
+        <field name="model">customer.support.faq.category</field>
+        <field name="arch" type="xml">
+            <list string="FAQ Categories" default_order="sequence, name">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="faq_count"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- FAQ Category Form View -->
+    <record id="view_customer_support_faq_category_form" model="ir.ui.view">
+        <field name="name">customer.support.faq.category.form</field>
+        <field name="model">customer.support.faq.category</field>
+        <field name="arch" type="xml">
+            <form string="FAQ Category">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options="{'terminology': 'archive'}"/>
+                        </button>
+                    </div>
+                    <group>
+                        <field name="name"/>
+                        <field name="sequence"/>
+                        <field name="faq_count"/>
+                    </group>
+                    <notebook>
+                        <page string="FAQs" name="faqs">
+                            <field name="faq_ids">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="view_count"/>
+                                    <field name="active" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- FAQ Category Action -->
+    <record id="action_customer_support_faq_category" model="ir.actions.act_window">
+        <field name="name">FAQ Categories</field>
+        <field name="res_model">customer.support.faq.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first FAQ Category
+            </p>
+            <p>
+                Organize your FAQs into categories for better navigation.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
+
+    <menuitem id="menu_customer_support_faq_category"
+              name="FAQ"
+              parent="menu_customer_support_root"
+              action="action_customer_support_faq_category"
+              sequence="90"/>
+</odoo>

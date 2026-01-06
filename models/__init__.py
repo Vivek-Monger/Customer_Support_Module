@@ -6,3 +6,4 @@ from . import res_user
 from . import sla_rule
 from . import support_dashboard
 from . import overview
+from . import faq

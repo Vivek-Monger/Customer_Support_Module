@@ -37,6 +37,8 @@ Long description of module's purpose
         'views/portal_ticket_overview.xml',
         'views/portal_activity_log.xml',
         'views/portal_ticket_confirmation.xml',
+        'views/portal_faq.xml',
+        'views/faq_views.xml',
     ],
 
 }
