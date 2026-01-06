@@ -61,8 +61,7 @@ class customer_support_module(models.Model):
     new_phase_id = fields.Selection(
         selection=lambda self: self.env['customer.support.module']._fields['phase_id'].selection,
         string="To Phase",
-        required=True,
-        default="new"
+        required=True
     )
 
     changed_by = fields.Many2one('res.users', string='Changed By')
@@ -128,17 +127,15 @@ class customer_support_module(models.Model):
             if rec.phase_id and not rec.phase_date:
                 rec.phase_date = rec.create_date
 
-            # ========== NEW: Send email notification to assigned agent ==========
+            # Send email notification to assigned agent
             if rec.assigned_user_id:
                 rec._send_assignment_email()
-            # ====================================================================
 
         return records
 
     def write(self, vals):
-        # ========== NEW: Check if assigned_user_id is being changed ==========
+        # Check if assigned_user_id is being changed
         old_assigned_user = self.assigned_user_id if self else False
-        # ====================================================================
 
         if 'phase_id' in vals:
             for ticket in self:
@@ -149,21 +146,24 @@ class customer_support_module(models.Model):
                     'changed_by': self.env.uid,
                     'change_date': fields.Datetime.now(),
                 })
+                
+                # ========== NEW: Send email to customer on status change ==========
+                ticket._send_status_change_email(ticket.phase_id, vals['phase_id'])
+                # ==================================================================
+                
             vals['phase_date'] = fields.Datetime.now()
 
         result = super().write(vals)
 
-        # ========== NEW: Send email if assigned_user_id changed ==========
+        # Send email if assigned_user_id changed
         if 'assigned_user_id' in vals:
             for rec in self:
                 # Only send if actually changed and new agent is different from old
                 if rec.assigned_user_id and rec.assigned_user_id != old_assigned_user:
                     rec._send_assignment_email()
-        # ================================================================
 
         return result
 
-    # ========== NEW METHOD: Send assignment email ==========
     def _send_assignment_email(self):
         """Send email notification to assigned support agent"""
         self.ensure_one()
@@ -234,7 +234,102 @@ class customer_support_module(models.Model):
         }
         
         self.env['mail.mail'].sudo().create(mail_values).send()
-    # ======================================================
+
+    # ========== NEW METHOD: Send status change email to customer ==========
+    def _send_status_change_email(self, old_status, new_status):
+        """Send email notification to customer when ticket status changes"""
+        self.ensure_one()
+        
+        # Only send for specific status changes (skip 'new' status)
+        statuses_to_notify = ['open', 'in_progress', 'resolved', 'closed']
+        if new_status not in statuses_to_notify:
+            return
+        
+        # Get customer email (ticket creator)
+        if not self.create_uid or not self.create_uid.email:
+            return
+        
+        customer_email = self.create_uid.email
+        customer_name = self.create_uid.name
+        
+        # Get status labels
+        status_dict = dict(self._fields['phase_id'].selection)
+        old_status_label = status_dict.get(old_status, 'Unknown')
+        new_status_label = status_dict.get(new_status, 'Unknown')
+        
+        # Get assigned agent name
+        agent_name = self.assigned_user_id.name if self.assigned_user_id else 'Support Team'
+        
+        # Build ticket link
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url', 'http://localhost:8069')
+        ticket_url = f"{base_url}/web#id={self.id}&model=customer.support.module&view_type=form"
+        
+        # Customize message based on new status
+        status_messages = {
+            'open': f"""
+                <p>Your support ticket has been <strong>acknowledged</strong> and is now being reviewed by our support team.</p>
+                <p>Assigned Agent: <strong>{agent_name}</strong></p>
+            """,
+            'in_progress': f"""
+                <p>Good news! Our support team has started working on your ticket.</p>
+                <p>Agent <strong>{agent_name}</strong> is currently investigating and resolving your issue.</p>
+            """,
+            'resolved': f"""
+                <p>Great news! Your support ticket has been <strong>resolved</strong>.</p>
+                <p>Agent <strong>{agent_name}</strong> has completed work on your issue.</p>
+                <p>Please review the resolution and let us know if you need any further assistance.</p>
+            """,
+            'closed': f"""
+                <p>Your support ticket has been <strong>closed</strong>.</p>
+                <p>Thank you for using our support system. If you have any other concerns, feel free to create a new ticket.</p>
+            """
+        }
+        
+        status_message = status_messages.get(new_status, '<p>Your ticket status has been updated.</p>')
+        
+        # Email body
+        mail_values = {
+            'subject': f'Ticket Status Updated: {self.ticket_id} - {new_status_label}',
+            'body_html': f"""
+                <p>Dear {customer_name},</p>
+                <p>Your support ticket status has been updated.</p>
+                
+                {status_message}
+                
+                <h3>Ticket Details:</h3>
+                <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">Ticket ID:</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{self.ticket_id}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">Subject:</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{self.subject or 'No Subject'}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">Previous Status:</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{old_status_label}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">New Status:</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><strong style="color: #28a745;">{new_status_label}</strong></td>
+                    </tr>
+                </table>
+                
+                <p style="margin-top: 20px;">
+                    <a href="{ticket_url}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                        View Ticket Details
+                    </a>
+                </p>
+                
+                <p>Best regards,<br>Customer Support Team</p>
+            """,
+            'email_to': customer_email,
+            'email_from': '02220149.cst@rub.edu.bt',
+        }
+        
+        self.env['mail.mail'].sudo().create(mail_values).send()
+    # ======================================================================
 
 
 class CustomerSupportPhaseHistory(models.Model):
@@ -250,8 +345,7 @@ class CustomerSupportPhaseHistory(models.Model):
     new_phase_id = fields.Selection(
         selection=lambda self: self.env['customer.support.module']._fields['phase_id'].selection,
         string="To Phase",
-        required=True,
-        default="new"
+        required=True
     )
 
     changed_by = fields.Many2one('res.users', string='Changed By')
