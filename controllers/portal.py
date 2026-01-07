@@ -2,9 +2,6 @@ from odoo import fields, http
 from odoo.http import request
 import base64
 from collections import Counter
-import logging
-
-_logger = logging.getLogger(__name__)
 
 
 class CustomerSupportPortal(http.Controller):
@@ -51,7 +48,29 @@ class CustomerSupportPortal(http.Controller):
         methods=['GET', 'POST']
     )
     def portal_create_ticket(self, **post):
-
+        
+        # Check if coming from confirmation page
+        from_confirm = post.get('from_confirm') or request.params.get('from_confirm')
+        
+        if from_confirm:
+            # Retrieve data from session
+            ticket_data = request.session.get('temp_ticket_data', {})
+            file_data_list = request.session.get('temp_ticket_files', [])
+            
+            return request.render(
+                'customer_support_module.portal_create_ticket',
+                {
+                    'subject': ticket_data.get('subject'),
+                    'description': ticket_data.get('description'),
+                    'priority': ticket_data.get('priority'),
+                    'project_id': ticket_data.get('project_id'),
+                    'file_count': len(file_data_list),
+                    'files': file_data_list,
+                    'from_confirm': True,
+                }
+            )
+        
+        # Normal create (not from confirmation)
         return request.render(
             'customer_support_module.portal_create_ticket',
             {
@@ -63,7 +82,7 @@ class CustomerSupportPortal(http.Controller):
         )
 
 
-    # Create Ticket (Submit) - FIXED FOR ATTACHMENTS
+    # Create Ticket (Submit)
 
     @http.route(
         ['/my/tickets/create/submit'],
@@ -74,9 +93,6 @@ class CustomerSupportPortal(http.Controller):
     )
     def portal_create_ticket_submit(self, **kwargs):
 
-        _logger.info("="*80)
-        _logger.info("TICKET CREATION STARTED")
-        
         ticket_vals = {
             'subject': kwargs.get('subject'),
             'description': kwargs.get('description'),
@@ -91,40 +107,25 @@ class CustomerSupportPortal(http.Controller):
             ticket_vals['project_id'] = int(project_id)
 
         ticket = request.env['customer.support.module'].sudo().create(ticket_vals)
-        _logger.info(f"✓ Ticket created: ID={ticket.id}, Ticket#={ticket.ticket_id}")
 
-        # Handle file attachments - FIXED VERSION
         files = request.httprequest.files.getlist('attachment')
-        _logger.info(f"Files received: {len(files)}")
-        
         attachments = []
 
         for f in files:
-            _logger.info(f"Processing file: {f.filename if f else 'None'}")
-            if f and f.filename:
-                try:
-                    file_content = f.read()
-                    _logger.info(f"  File size: {len(file_content)} bytes")
-                    
-                    if file_content:
-                        attachment = request.env['ir.attachment'].sudo().create({
-                            'name': f.filename,
-                            'type': 'binary',
-                            'datas': base64.b64encode(file_content),
-                            'res_model': 'customer.support.module',
-                            'res_id': ticket.id,
-                            'mimetype': f.content_type,
-                        })
-                        attachments.append(attachment.id)
-                        _logger.info(f"  ✓ Attachment created: ID={attachment.id}")
-                except Exception as e:
-                    _logger.error(f"  ✗ Error uploading file: {str(e)}")
+            if f.filename:
+                attachment = request.env['ir.attachment'].sudo().create({
+                    'name': f.filename,
+                    'type': 'binary',
+                    'datas': base64.b64encode(f.read()),
+                    'res_model': 'customer.support.module',
+                    'res_id': ticket.id,
+                    'mimetype': f.content_type,
+                })
+                attachments.append(attachment.id)
 
         if attachments:
             ticket.write({'attachment_ids': [(6, 0, attachments)]})
-            _logger.info(f"✓ Linked {len(attachments)} attachments to ticket")
 
-        _logger.info("="*80)
         return request.redirect('/my/tickets')
 
     # ---------------------------------------------------------
@@ -382,6 +383,46 @@ class CustomerSupportPortal(http.Controller):
         
         return request.render('customer_support_module.portal_faq_detail', values)
     
+    # Ticket Details
+    @http.route(['/my/tickets/<int:ticket_id>'], type='http', auth='user', website=True)
+    def portal_ticket_detail(self, ticket_id, **kwargs):
+        """Display detailed view of a single ticket"""
+        
+        Ticket = request.env['customer.support.module'].sudo()
+        
+        # Get the ticket and verify ownership
+        ticket = Ticket.browse(ticket_id)
+        
+        if not ticket.exists() or ticket.create_uid.id != request.env.uid:
+            return request.redirect('/my/tickets')
+        
+        # Get phase labels
+        phase_labels = self._get_phase_labels()
+        
+        # Get phase history
+        phase_history = request.env['customer.support.phase.history'].sudo().search(
+            [('ticket_id', '=', ticket.id)],
+            order='change_date desc'
+        )
+        
+        # Get priority label
+        priority_labels = {
+            '0': 'Low',
+            '1': 'Medium',
+            '2': 'High',
+            '3': 'Urgent'
+        }
+        
+        values = {
+            'ticket': ticket,
+            'phase_labels': phase_labels,
+            'priority_label': priority_labels.get(ticket.priority, 'Unknown'),
+            'phase_history': phase_history,
+            'page_name': 'ticket_detail',
+        }
+        
+        return request.render('customer_support_module.portal_ticket_detail', values)
+    
     # Notification
 
     @http.route(['/my/notifications'], type='http', auth='user', website=True)
@@ -414,16 +455,41 @@ class CustomerSupportPortal(http.Controller):
     def portal_notification_mark_read(self, notification_id, **kwargs):
         """Mark a single notification as read and redirect to ticket"""
         
-        Notification = request.env['customer.support.notification'].sudo()
-        notification = Notification.browse(notification_id)
+        import logging
+        _logger = logging.getLogger(__name__)
         
-        if notification.exists() and notification.user_id.id == request.env.uid:
-            notification.action_mark_as_read()
+        try:
+            Notification = request.env['customer.support.notification'].sudo()
+            notification = Notification.browse(notification_id)
             
-            # Redirect to tickets page
-            # return request.redirect('/my/tickets')
-        
-        return request.redirect('/my/notifications')
+            _logger.info(f"Processing notification ID: {notification_id}")
+            
+            if not notification.exists():
+                _logger.warning(f"Notification {notification_id} does not exist")
+                return request.redirect('/my/notifications')
+            
+            if notification.user_id.id != request.env.uid:
+                _logger.warning(f"User {request.env.uid} tried to access notification {notification_id} owned by {notification.user_id.id}")
+                return request.redirect('/my/notifications')
+            
+            # Mark as read
+            notification.action_mark_as_read()
+            _logger.info(f"Marked notification {notification_id} as read")
+            
+            # Redirect to ticket details if ticket exists
+            if notification.ticket_id and notification.ticket_id.exists():
+                ticket_id = notification.ticket_id.id
+                _logger.info(f"Redirecting to ticket {ticket_id}")
+                return request.redirect(f'/my/tickets/{ticket_id}')
+            else:
+                _logger.info("No ticket associated with notification")
+                return request.redirect('/my/notifications')
+                
+        except Exception as e:
+            _logger.error(f"Error in portal_notification_mark_read: {str(e)}")
+            import traceback
+            _logger.error(traceback.format_exc())
+            return request.redirect('/my/notifications')
 
 
     @http.route(['/my/notifications/mark-all-read'], type='http', auth='user', website=True)

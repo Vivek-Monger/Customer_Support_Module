@@ -39,23 +39,26 @@
                                     <t t-foreach="unread_notifications" t-as="notification">
                                         <div class="list-group-item list-group-item-warning">
                                             <div class="d-flex w-100 justify-content-between align-items-start">
-                                                <div class="flex-grow-1">
+                                                <!-- Make notification content clickable -->
+                                                <a t-attf-href="/my/notifications/mark-read/#{notification.id}" 
+                                                   class="flex-grow-1 text-decoration-none text-dark"
+                                                   style="cursor: pointer;">
                                                     <h6 class="mb-1">
                                                         <i t-attf-class="fa fa-#{notification.notification_type == 'phase_change' and 'exchange' or notification.notification_type == 'assignment' and 'user' or notification.notification_type == 'resolved' and 'check-circle' or notification.notification_type == 'closed' and 'times-circle' or 'comment'} text-primary"></i>
                                                         <strong t-esc="notification.title"/>
+                                                        <t t-if="notification.ticket_id">
+                                                            <span class="badge badge-info ml-2">
+                                                                <i class="fa fa-ticket"></i> <t t-esc="notification.ticket_id.ticket_id"/>
+                                                            </span>
+                                                        </t>
                                                     </h6>
                                                     <p class="mb-1" t-esc="notification.message"/>
                                                     <small class="text-muted">
                                                         <i class="fa fa-clock-o"></i>
                                                         <t t-esc="notification.create_date.strftime('%B %d, %Y at %I:%M %p') if notification.create_date else 'Unknown'"/>
                                                     </small>
-                                                </div>
+                                                </a>
                                                 <div class="ml-3">
-                                                    <a t-attf-href="/my/notifications/mark-read/#{notification.id}" 
-                                                       class="btn btn-sm btn-success mb-1"
-                                                       title="Mark as Read">
-                                                        <i class="fa fa-check"></i>
-                                                    </a>
                                                     <a t-attf-href="/my/notifications/delete/#{notification.id}" 
                                                        class="btn btn-sm btn-danger"
                                                        title="Delete"
@@ -82,10 +85,17 @@
                                     <t t-foreach="read_notifications" t-as="notification">
                                         <div class="list-group-item">
                                             <div class="d-flex w-100 justify-content-between align-items-start">
-                                                <div class="flex-grow-1">
+                                                <!-- Make notification content clickable -->
+                                                <a t-attf-href="/my/tickets/#{notification.ticket_id.id}" 
+                                                   t-if="notification.ticket_id"
+                                                   class="flex-grow-1 text-decoration-none"
+                                                   style="cursor: pointer;">
                                                     <h6 class="mb-1 text-muted">
                                                         <i t-attf-class="fa fa-#{notification.notification_type == 'phase_change' and 'exchange' or notification.notification_type == 'assignment' and 'user' or notification.notification_type == 'resolved' and 'check-circle' or notification.notification_type == 'closed' and 'times-circle' or 'comment'}"></i>
                                                         <t t-esc="notification.title"/>
+                                                        <span class="badge badge-secondary ml-2">
+                                                            <i class="fa fa-ticket"></i> <t t-esc="notification.ticket_id.ticket_id"/>
+                                                        </span>
                                                     </h6>
                                                     <p class="mb-1 text-muted" t-esc="notification.message"/>
                                                     <small class="text-muted">
@@ -95,6 +105,18 @@
                                                             <i class="fa fa-check-circle"></i>
                                                             Read on <t t-esc="notification.read_date.strftime('%B %d, %Y at %I:%M %p') if notification.read_date else 'Unknown'"/>
                                                         </span>
+                                                    </small>
+                                                </a>
+                                                <!-- If no ticket, show non-clickable content -->
+                                                <div t-if="not notification.ticket_id" class="flex-grow-1">
+                                                    <h6 class="mb-1 text-muted">
+                                                        <i t-attf-class="fa fa-#{notification.notification_type == 'phase_change' and 'exchange' or notification.notification_type == 'assignment' and 'user' or notification.notification_type == 'resolved' and 'check-circle' or notification.notification_type == 'closed' and 'times-circle' or 'comment'}"></i>
+                                                        <t t-esc="notification.title"/>
+                                                    </h6>
+                                                    <p class="mb-1 text-muted" t-esc="notification.message"/>
+                                                    <small class="text-muted">
+                                                        <i class="fa fa-clock-o"></i>
+                                                        <t t-esc="notification.create_date.strftime('%B %d, %Y at %I:%M %p') if notification.create_date else 'Unknown'"/>
                                                     </small>
                                                 </div>
                                                 <div class="ml-3">
@@ -138,6 +160,12 @@
                 .badge-danger {
                     font-size: 0.75rem;
                     padding: 0.25rem 0.5rem;
+                }
+                .list-group-item:hover {
+                    background-color: #f8f9fa;
+                }
+                a.text-decoration-none:hover {
+                    opacity: 0.8;
                 }
             </style>
         </t>

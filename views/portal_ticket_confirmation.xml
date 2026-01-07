@@ -1,53 +1,93 @@
 <odoo>
-<template id="portal_ticket_confirmation" name="Ticket Confirmation">
-    <t t-call="website.layout">
-        <div class="container mt-4">
-
-            <h3>Confirm Your Ticket</h3>
-
-            <div class="card p-3 mb-3">
-                <p><strong>Subject:</strong> <t t-esc="subject"/></p>
-                <p><strong>Description:</strong></p>
-                <p t-esc="description"/>
-                <p>
-                    <strong>Priority:</strong>
-                    <span class="badge bg-info">
-                        <t t-esc="priority_label"/>
-                    </span>
-                </p>
-            </div>
-
-            <!-- Confirm -->
-            <form action="/my/tickets/create/final" method="post" class="d-inline">
-
-                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-
-                <input type="hidden" name="subject" t-att-value="subject"/>
-                <input type="hidden" name="description" t-att-value="description"/>
-                <input type="hidden" name="priority" t-att-value="priority"/>
-                <input type="hidden" name="project_id" t-att-value="project_id"/>
-
-                <button class="btn btn-success">
-                    Confirm &amp; Create Ticket
-                </button>
-            </form>
-
-            <!-- Go Back -->
-            <form action="/my/tickets/create" method="post" class="d-inline ms-2">
-
-                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+  <template id="portal_ticket_confirmation" name="Ticket Confirmation">
+    <t t-call="portal.portal_layout">
+      <t t-set="breadcrumbs" t-value="[
+        ('/my', 'My Account'),
+        ('/my/tickets', 'My Tickets'),
+        ('/my/tickets/create', 'Create Ticket'),
+        ('', 'Confirm')
+      ]"/>
+      
+      <div class="container mt-4">
+        <div class="row">
+          <div class="col-lg-8 offset-lg-2">
+            <div class="card shadow">
+              <div class="card-header bg-warning text-white">
+                <h3 class="mb-0">
+                  <i class="fa fa-exclamation-triangle"></i> Confirm Ticket Details
+                </h3>
+              </div>
+              
+              <div class="card-body">
+                <p class="lead">Please review your ticket before submitting:</p>
                 
-                <input type="hidden" name="subject" t-att-value="subject"/>
-                <input type="hidden" name="description" t-att-value="description"/>
-                <input type="hidden" name="priority" t-att-value="priority"/>
-                <input type="hidden" name="project_id" t-att-value="project_id"/>
-
-                <button class="btn btn-secondary">
-                    Go Back to Edit
-                </button>
-            </form>
-
+                <table class="table table-bordered mt-3">
+                  <tr>
+                    <th style="width: 30%;">Subject:</th>
+                    <td><strong><t t-esc="subject"/></strong></td>
+                  </tr>
+                  <tr>
+                    <th>Description:</th>
+                    <td><t t-esc="description"/></td>
+                  </tr>
+                  <tr>
+                    <th>Priority:</th>
+                    <td>
+                      <span t-attf-class="badge bg-{{ 'danger' if priority == '3' else ('warning' if priority == '2' else ('info' if priority == '1' else 'secondary')) }}">
+                        <t t-esc="priority_label"/>
+                      </span>
+                    </td>
+                  </tr>
+                  <tr t-if="project_name">
+                    <th>Project:</th>
+                    <td><t t-esc="project_name"/></td>
+                  </tr>
+                  <tr t-if="file_count and file_count > 0">
+                    <th>Attachments:</th>
+                    <td>
+                      <span class="badge bg-success">
+                        <i class="fa fa-paperclip"></i> <t t-esc="file_count"/> file(s)
+                      </span>
+                      <ul class="mt-2 mb-0" t-if="files">
+                        <li t-foreach="files" t-as="file">
+                          <i class="fa fa-file"></i> 
+                          <t t-esc="file['filename']"/>
+                          <small class="text-muted">
+                            (<t t-esc="'%.2f' % (file['size'] / 1024)"/> KB)
+                          </small>
+                        </li>
+                      </ul>
+                    </td>
+                  </tr>
+                </table>
+                
+                <div class="alert alert-info mt-3">
+                  <i class="fa fa-info-circle"></i>
+                  <strong>Note:</strong> Your ticket will be sent to the support team immediately after confirmation.
+                </div>
+                
+                <!-- Form to submit final creation -->
+                <form action="/my/tickets/create/final" method="post" class="mt-4">
+                  <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                  <input type="hidden" name="subject" t-att-value="subject"/>
+                  <input type="hidden" name="description" t-att-value="description"/>
+                  <input type="hidden" name="priority" t-att-value="priority"/>
+                  <input type="hidden" name="project_id" t-att-value="project_id"/>
+                  
+                  <div class="d-flex justify-content-between">
+                    <a href="/my/tickets/create/edit" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> Back to Edit
+                    </a>
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fa fa-check-circle"></i> Submit Ticket
+                    </button>
+                    </div>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </t>
-</template>
+  </template>
 </odoo>
