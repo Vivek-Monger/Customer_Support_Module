@@ -42,6 +42,7 @@ Long description of module's purpose
         'views/notification_views.xml',
         'views/portal_notification.xml',
         'views/portal_ticket_detail.xml',
+        'views/sla_cron.xml',
     ],
 
 }

@@ -5,7 +5,9 @@
         <field name="name">customer.support.notification.list</field>
         <field name="model">customer.support.notification</field>
         <field name="arch" type="xml">
-            <list string="Notifications" decoration-bf="not is_read">
+            <list string="Notifications" 
+                  decoration-bf="not is_read" 
+                  decoration-danger="notification_type == 'sla_breach'">
                 <field name="create_date" string="Date"/>
                 <field name="user_id"/>
                 <field name="ticket_id"/>
@@ -23,6 +25,18 @@
         <field name="arch" type="xml">
             <form string="Notification">
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_mark_as_read" 
+                                type="object" 
+                                string="Mark as Read"
+                                class="oe_stat_button" 
+                                icon="fa-check"
+                                invisible="is_read"/>
+                    </div>
+                    <div class="alert alert-danger" role="alert" 
+                         invisible="notification_type != 'sla_breach'">
+                        <strong>⚠️ SLA BREACH ALERT</strong>
+                    </div>
                     <group>
                         <group>
                             <field name="user_id"/>
@@ -56,6 +70,8 @@
                 <separator/>
                 <filter string="Unread" name="unread" domain="[('is_read', '=', False)]"/>
                 <filter string="Read" name="read" domain="[('is_read', '=', True)]"/>
+                <filter string="SLA Breaches" name="sla_breach" 
+                        domain="[('notification_type', '=', 'sla_breach')]"/>
                 <separator/>
                 <group expand="0" string="Group By">
                     <filter string="User" name="group_user" context="{'group_by': 'user_id'}"/>
@@ -77,15 +93,39 @@
                 No notifications yet
             </p>
             <p>
-                Notifications will appear here when ticket statuses change.
+                Notifications will appear here when ticket statuses change or SLA breaches occur.
             </p>
         </field>
     </record>
 
-    <!-- Menu Item -->
+    <!-- SLA Breach Notifications Action -->
+    <record id="action_sla_breach_notifications" model="ir.actions.act_window">
+        <field name="name">SLA Breach Alerts</field>
+        <field name="res_model">customer.support.notification</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('notification_type', '=', 'sla_breach')]</field>
+        <field name="context">{'search_default_unread': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No SLA breaches
+            </p>
+            <p>
+                Great! All tickets are within their SLA deadlines.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
     <menuitem id="menu_customer_support_notification"
               name="Notifications"
               parent="customer_support_module.menu_customer_support_root"
               action="action_customer_support_notification"
               sequence="40"/>
+
+    <menuitem id="menu_sla_breach_alerts"
+              name="SLA Breach Alerts"
+              parent="customer_support_module.menu_customer_support_root"
+              action="action_sla_breach_notifications"
+              sequence="41"
+              groups="customer_support_module.group_admin,customer_support_module.group_support_agent"/>
 </odoo>

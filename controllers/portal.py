@@ -453,7 +453,7 @@ class CustomerSupportPortal(http.Controller):
 
     @http.route(['/my/notifications/mark-read/<int:notification_id>'], type='http', auth='user', website=True)
     def portal_notification_mark_read(self, notification_id, **kwargs):
-        """Mark a single notification as read and redirect to ticket"""
+        """Mark a single notification as read and redirect"""
         
         import logging
         _logger = logging.getLogger(__name__)
@@ -476,8 +476,14 @@ class CustomerSupportPortal(http.Controller):
             notification.action_mark_as_read()
             _logger.info(f"Marked notification {notification_id} as read")
             
-            # Redirect to ticket details if ticket exists
-            if notification.ticket_id and notification.ticket_id.exists():
+            # Handle redirect parameter from URL query string
+            redirect = kwargs.get('redirect')
+            
+            if redirect == 'notifications':
+                # Stay on notifications page (from tick button)
+                return request.redirect('/my/notifications')
+            elif notification.ticket_id and notification.ticket_id.exists():
+                # Redirect to ticket details if ticket exists (from clicking notification)
                 ticket_id = notification.ticket_id.id
                 _logger.info(f"Redirecting to ticket {ticket_id}")
                 return request.redirect(f'/my/tickets/{ticket_id}')

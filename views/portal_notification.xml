@@ -58,7 +58,15 @@
                                                         <t t-esc="notification.create_date.strftime('%B %d, %Y at %I:%M %p') if notification.create_date else 'Unknown'"/>
                                                     </small>
                                                 </a>
-                                                <div class="ml-3">
+                                                <div class="ml-3 d-flex gap-2">
+                                                    <!-- Mark as Read Button (Tick) -->
+                                                    <a t-attf-href="/my/notifications/mark-read/#{notification.id}?redirect=notifications" 
+                                                       class="btn btn-sm btn-success"
+                                                       title="Mark as Read"
+                                                       style="margin-right: 5px;">
+                                                        <i class="fa fa-check"></i>
+                                                    </a>
+                                                    <!-- Delete Button -->
                                                     <a t-attf-href="/my/notifications/delete/#{notification.id}" 
                                                        class="btn btn-sm btn-danger"
                                                        title="Delete"
@@ -166,6 +174,10 @@
                 }
                 a.text-decoration-none:hover {
                     opacity: 0.8;
+                }
+                .btn-sm {
+                    padding: 0.25rem 0.5rem;
+                    font-size: 0.875rem;
                 }
             </style>
         </t>
