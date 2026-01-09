@@ -179,7 +179,7 @@ class customer_support_module(models.Model):
         customer_name = self.create_uid.name if self.create_uid else 'Unknown'
         
         # Get project name
-        project_name = self.project_id.name if self.project_id else 'No Project'
+        project_name = self.project_id.project_name if self.project_id else 'No Project'
         
         # Build ticket link
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url', 'http://localhost:8069')

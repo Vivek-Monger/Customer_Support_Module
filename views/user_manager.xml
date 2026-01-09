@@ -1,19 +1,53 @@
 <odoo>
   <data>
-
     <!-- Form View -->
     <record id="view_user_manager_form" model="ir.ui.view">
       <field name="name">user.manager.form</field>
       <field name="model">user.manager</field>
       <field name="arch" type="xml">
         <form string="User Manager">
+          <!-- Smart Button Bar -->
+          <header>
+            <button name="action_view_projects" 
+                    type="object" 
+                    class="oe_stat_button" 
+                    icon="fa-folder-open"
+                    invisible="role != 'customer' or not user_id">
+              <field name="project_count" widget="statinfo" string="Projects"/>
+            </button>
+          </header>
+          
           <sheet>
             <group>
               <field name="name"/>
               <field name="email"/>
               <field name="role"/>
-              <field name="user_id" readonly="1"/>
+              <field name="user_id" readonly="1" invisible="1"/>
             </group>
+            
+            <!-- Projects Notebook Tab (Only for Customers) -->
+            <notebook invisible="role != 'customer'">
+              <page string="Projects" name="projects">
+                <!-- Message when user_id not created yet -->
+                <div class="alert alert-info" invisible="user_id">
+                  <strong>Note:</strong> Please save this customer record first, then you can assign projects.
+                </div>
+                
+                <!-- Show assigned projects - NO INLINE TREE -->
+                <field name="project_ids" 
+                       invisible="not user_id"
+                       context="{'default_customer_id': user_id}"/>
+                
+                <!-- Button to assign existing projects -->
+                <div invisible="not user_id" class="mt-3">
+                  <button name="%(customer_support_module.action_assign_projects_wizard)d" 
+                          type="action" 
+                          string="Assign Existing Projects" 
+                          class="btn-primary" 
+                          context="{'default_customer_id': user_id}"/>
+                </div>
+              </page>
+            </notebook>
           </sheet>
         </form>
       </field>
@@ -28,7 +62,8 @@
           <field name="name"/>
           <field name="email"/>
           <field name="role"/>
-          <field name="user_id"/>
+          <field name="project_count" string="Projects" invisible="role != 'customer'"/>
+          <field name="user_id" optional="hide"/>
         </list>
       </field>
     </record>
@@ -47,11 +82,11 @@
 
     <!-- Menu -->
     <menuitem id="menu_user_manager_root" 
-          name="User Manager" 
-          parent="customer_support_module.menu_customer_support_root" 
-          sequence="20" 
-          action="action_user_manager"
-          groups="customer_support_module.group_admin"/>
+              name="User Manager" 
+              parent="customer_support_module.menu_customer_support_root" 
+              sequence="20" 
+              action="action_user_manager"
+              groups="customer_support_module.group_admin"/>
 
     <!-- Email Template -->
     <record id="email_template_user_credentials" model="mail.template">
@@ -74,6 +109,5 @@
         ]]>
       </field>
     </record>
-
   </data>
 </odoo>

@@ -1,47 +1,105 @@
 <odoo>
-    <data>
-        <!-- List View-->
-      <record id="project_list" model="ir.ui.view">
-        <field name="name">project.list</field>
-        <field name="model">customer.project</field>
-        <field name="arch" type="xml">
-          <list string="All Project" class="project-list">
-            <field name = "project"/>
-            <field name = "description"/>
-          </list>
-        </field>
-      </record>
+  <data>
+    <!-- List View -->
+    <record id="project_list" model="ir.ui.view">
+      <field name="name">project.list</field>
+      <field name="model">customer.project</field>
+      <field name="arch" type="xml">
+        <list string="All Projects" class="project-list">
+          <field name="project_code"/>
+          <field name="project_name"/>
+          <field name="customer_name"/>
+          <field name="start_date"/>
+          <field name="warranty_end_date"/>
+          <field name="warranty_status" widget="badge" 
+                 decoration-success="warranty_status == 'active'"
+                 decoration-warning="warranty_status == 'expiring_soon'"
+                 decoration-danger="warranty_status == 'expired'"/>
+          <field name="days_remaining"/>
+          <field name="ticket_count"/>
+        </list>
+      </field>
+    </record>
 
     <!-- Form View -->
     <record id="project_form_view" model="ir.ui.view">
-          <field name="name">project.form.view</field>
-          <field name="model">customer.project</field>
-          <field name="arch" type="xml">
-              <form string="Project" class="project_form">
-                  <sheet>
-                      <group>
-                          <field name="project"/>
-                          <field name="description"/>
-                      </group>
-                  </sheet>
-              </form>
-          </field>
-      </record>
+      <field name="name">project.form.view</field>
+      <field name="model">customer.project</field>
+      <field name="arch" type="xml">
+        <form string="Project" class="project_form">
+          <header>
+            <button name="action_extend_warranty" 
+                    string="Extend Warranty" 
+                    type="object" 
+                    class="btn-primary"
+                    groups="customer_support_module.group_admin"/>
+          </header>
+          
+          <sheet>
+            <div class="oe_button_box" name="button_box">
+              <button name="action_view_tickets" 
+                      type="object" 
+                      class="oe_stat_button" 
+                      icon="fa-ticket">
+                <field name="ticket_count" widget="statinfo" string="Tickets"/>
+              </button>
+            </div>
+            
+            <div class="oe_title">
+              <h1>
+                <field name="project_code" readonly="1"/>
+              </h1>
+            </div>
+            
+            <group>
+              <group string="Project Information">
+                <field name="project_name"/>
+                <field name="customer_id" 
+                       options="{'no_create': True, 'no_open': True}"/>
+                <field name="customer_name" invisible="1"/>
+              </group>
+              
+              <group string="Warranty Information">
+                <field name="start_date"/>
+                <field name="warranty_months"/>
+                <field name="warranty_end_date" readonly="1"/>
+                <field name="is_warranty_active" invisible="1"/>
+                <field name="warranty_status" widget="badge"
+                       decoration-success="warranty_status == 'active'"
+                       decoration-warning="warranty_status == 'expiring_soon'"
+                       decoration-danger="warranty_status == 'expired'"/>
+                <field name="days_remaining" readonly="1" 
+                       decoration-success="days_remaining &gt; 30"
+                       decoration-warning="days_remaining &lt;= 30 and days_remaining &gt; 0"
+                       decoration-danger="days_remaining &lt;= 0"/>
+              </group>
+            </group>
+            
+            <group string="Description">
+              <field name="description" placeholder="Enter project description..." nolabel="1"/>
+            </group>
+            
+            <group string="Additional Notes">
+              <field name="notes" placeholder="Enter any additional notes..." nolabel="1"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
 
-      <!-- Actions-->
-       <record id="action_project" model="ir.actions.act_window">
-            <field name="name">Projects</field>
-            <field name="res_model">customer.project</field>
-            <field name="view_mode">list,form</field>
-        </record>
+    <!-- Actions -->
+    <record id="action_project" model="ir.actions.act_window">
+      <field name="name">Projects</field>
+      <field name="res_model">customer.project</field>
+      <field name="view_mode">list,form</field>
+    </record>
 
-        <!-- Submenu for Project under existing root menu -->
-        <menuitem id="menu_project"
-                  name="Projects"
-                  parent="menu_customer_support_root"
-                  action="action_project"
-                  sequence="10"
-                  groups="customer_support_module.group_admin"/>
-
-    </data>
+    <!-- Submenu for Project under existing root menu -->
+    <menuitem id="menu_project"
+              name="Projects"
+              parent="menu_customer_support_root"
+              action="action_project"
+              sequence="10"
+              groups="customer_support_module.group_admin"/>
+  </data>
 </odoo>
