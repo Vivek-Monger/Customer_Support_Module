@@ -28,7 +28,7 @@ class CustomerSupportNotification(models.Model):
         ('comment', 'Comment'),
         ('resolved', 'Resolved'),
         ('closed', 'Closed'),
-        ('sla_breach', 'SLA Breach'),  # Add this type for SLA notifications
+        ('sla_breach', 'SLA Breach'), 
     ], string='Type', default='phase_change')
     
     is_read = fields.Boolean(string='Read', default=False)

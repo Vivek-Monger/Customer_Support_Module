@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Notifications Page Template -->
     <template id="portal_notifications" name="My Notifications">
         <t t-call="portal.portal_layout">
             <t t-set="breadcrumbs_searchbar" t-value="True"/>
@@ -12,7 +11,7 @@
             <div class="container mt-4">
                 <div class="row">
                     <div class="col-12">
-                        <!-- Header with Mark All as Read button -->
+                        <!-- Header with Action buttons -->
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h3>
                                 <i class="fa fa-bell"></i> Your Notifications
@@ -20,126 +19,186 @@
                                     <span class="badge badge-danger ml-2" t-esc="unread_count"/>
                                 </t>
                             </h3>
-                            <t t-if="unread_count > 0">
-                                <a href="/my/notifications/mark-all-read" class="btn btn-primary">
-                                    <i class="fa fa-check-double"></i> Mark All as Read
-                                </a>
-                            </t>
+                            <div class="btn-group">
+                                <t t-if="unread_count > 0">
+                                    <a href="/my/notifications/mark-all-read" class="btn btn-primary">
+                                        <i class="fa fa-check-double"></i> Mark All as Read
+                                    </a>
+                                </t>
+                                <t t-if="notifications">
+                                    <a href="/my/notifications/delete-all" 
+                                       class="btn btn-danger ml-2"
+                                       onclick="return confirm('Are you sure you want to delete ALL notifications? This action cannot be undone.');">
+                                        <i class="fa fa-trash"></i> Delete All
+                                    </a>
+                                </t>
+                            </div>
                         </div>
 
-                        <!-- Unread Notifications Section -->
-                        <t t-if="unread_notifications">
-                            <div class="card shadow-sm mb-4">
-                                <div class="card-header bg-warning text-dark">
-                                    <h5 class="mb-0">
-                                        <i class="fa fa-bell"></i> Unread Notifications (<t t-esc="len(unread_notifications)"/>)
-                                    </h5>
-                                </div>
-                                <div class="list-group list-group-flush">
-                                    <t t-foreach="unread_notifications" t-as="notification">
-                                        <div class="list-group-item list-group-item-warning">
-                                            <div class="d-flex w-100 justify-content-between align-items-start">
-                                                <!-- Make notification content clickable -->
-                                                <a t-attf-href="/my/notifications/mark-read/#{notification.id}" 
-                                                   class="flex-grow-1 text-decoration-none text-dark"
-                                                   style="cursor: pointer;">
-                                                    <h6 class="mb-1">
-                                                        <i t-attf-class="fa fa-#{notification.notification_type == 'phase_change' and 'exchange' or notification.notification_type == 'assignment' and 'user' or notification.notification_type == 'resolved' and 'check-circle' or notification.notification_type == 'closed' and 'times-circle' or 'comment'} text-primary"></i>
-                                                        <strong t-esc="notification.title"/>
-                                                        <t t-if="notification.ticket_id">
-                                                            <span class="badge badge-info ml-2">
-                                                                <i class="fa fa-ticket"></i> <t t-esc="notification.ticket_id.ticket_id"/>
-                                                            </span>
-                                                        </t>
-                                                    </h6>
-                                                    <p class="mb-1" t-esc="notification.message"/>
-                                                    <small class="text-muted">
-                                                        <i class="fa fa-clock-o"></i>
-                                                        <t t-esc="notification.create_date.strftime('%B %d, %Y at %I:%M %p') if notification.create_date else 'Unknown'"/>
-                                                    </small>
-                                                </a>
-                                                <div class="ml-3 d-flex gap-2">
-                                                    <!-- Mark as Read Button (Tick) -->
-                                                    <a t-attf-href="/my/notifications/mark-read/#{notification.id}?redirect=notifications" 
-                                                       class="btn btn-sm btn-success"
-                                                       title="Mark as Read"
-                                                       style="margin-right: 5px;">
-                                                        <i class="fa fa-check"></i>
-                                                    </a>
-                                                    <!-- Delete Button -->
-                                                    <a t-attf-href="/my/notifications/delete/#{notification.id}" 
-                                                       class="btn btn-sm btn-danger"
-                                                       title="Delete"
-                                                       onclick="return confirm('Are you sure you want to delete this notification?');">
-                                                        <i class="fa fa-trash"></i>
-                                                    </a>
+                        <!-- Selection and Bulk Actions Form -->
+                        <t t-if="notifications">
+                            <form id="notifications-form" method="post" action="/my/notifications/delete-selected">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="card shadow-sm mb-3">
+                                    <div class="card-body py-2">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input" id="select-all"/>
+                                                    <label class="custom-control-label" for="select-all">
+                                                        <strong>Select All</strong>
+                                                    </label>
                                                 </div>
                                             </div>
+                                            <div>
+                                                <button type="submit" class="btn btn-sm btn-danger" id="delete-selected-btn" disabled="disabled"
+                                                        onclick="return confirm('Are you sure you want to delete the selected notifications?');">
+                                                    <i class="fa fa-trash"></i> Delete Selected
+                                                </button>
+                                            </div>
                                         </div>
-                                    </t>
+                                    </div>
                                 </div>
-                            </div>
-                        </t>
 
-                        <!-- Read Notifications Section -->
-                        <t t-if="read_notifications">
-                            <div class="card shadow-sm mb-4">
-                                <div class="card-header bg-light">
-                                    <h5 class="mb-0">
-                                        <i class="fa fa-check"></i> Read Notifications (<t t-esc="len(read_notifications)"/>)
-                                    </h5>
-                                </div>
-                                <div class="list-group list-group-flush">
-                                    <t t-foreach="read_notifications" t-as="notification">
-                                        <div class="list-group-item">
-                                            <div class="d-flex w-100 justify-content-between align-items-start">
-                                                <!-- Make notification content clickable -->
-                                                <a t-attf-href="/my/tickets/#{notification.ticket_id.id}" 
-                                                   t-if="notification.ticket_id"
-                                                   class="flex-grow-1 text-decoration-none"
-                                                   style="cursor: pointer;">
-                                                    <h6 class="mb-1 text-muted">
-                                                        <i t-attf-class="fa fa-#{notification.notification_type == 'phase_change' and 'exchange' or notification.notification_type == 'assignment' and 'user' or notification.notification_type == 'resolved' and 'check-circle' or notification.notification_type == 'closed' and 'times-circle' or 'comment'}"></i>
-                                                        <t t-esc="notification.title"/>
-                                                        <span class="badge badge-secondary ml-2">
-                                                            <i class="fa fa-ticket"></i> <t t-esc="notification.ticket_id.ticket_id"/>
-                                                        </span>
-                                                    </h6>
-                                                    <p class="mb-1 text-muted" t-esc="notification.message"/>
-                                                    <small class="text-muted">
-                                                        <i class="fa fa-clock-o"></i>
-                                                        <t t-esc="notification.create_date.strftime('%B %d, %Y at %I:%M %p') if notification.create_date else 'Unknown'"/>
-                                                        <span class="ml-3">
-                                                            <i class="fa fa-check-circle"></i>
-                                                            Read on <t t-esc="notification.read_date.strftime('%B %d, %Y at %I:%M %p') if notification.read_date else 'Unknown'"/>
-                                                        </span>
-                                                    </small>
-                                                </a>
-                                                <!-- If no ticket, show non-clickable content -->
-                                                <div t-if="not notification.ticket_id" class="flex-grow-1">
-                                                    <h6 class="mb-1 text-muted">
-                                                        <i t-attf-class="fa fa-#{notification.notification_type == 'phase_change' and 'exchange' or notification.notification_type == 'assignment' and 'user' or notification.notification_type == 'resolved' and 'check-circle' or notification.notification_type == 'closed' and 'times-circle' or 'comment'}"></i>
-                                                        <t t-esc="notification.title"/>
-                                                    </h6>
-                                                    <p class="mb-1 text-muted" t-esc="notification.message"/>
-                                                    <small class="text-muted">
-                                                        <i class="fa fa-clock-o"></i>
-                                                        <t t-esc="notification.create_date.strftime('%B %d, %Y at %I:%M %p') if notification.create_date else 'Unknown'"/>
-                                                    </small>
-                                                </div>
-                                                <div class="ml-3">
-                                                    <a t-attf-href="/my/notifications/delete/#{notification.id}" 
-                                                       class="btn btn-sm btn-danger"
-                                                       title="Delete"
-                                                       onclick="return confirm('Are you sure you want to delete this notification?');">
-                                                        <i class="fa fa-trash"></i>
-                                                    </a>
-                                                </div>
-                                            </div>
+                                <!-- Unread Notifications Section -->
+                                <t t-if="unread_notifications">
+                                    <div class="card shadow-sm mb-4">
+                                        <div class="card-header bg-warning text-dark">
+                                            <h5 class="mb-0">
+                                                <i class="fa fa-bell"></i> Unread Notifications (<t t-esc="len(unread_notifications)"/>)
+                                            </h5>
                                         </div>
-                                    </t>
-                                </div>
-                            </div>
+                                        <div class="list-group list-group-flush">
+                                            <t t-foreach="unread_notifications" t-as="notification">
+                                                <div class="list-group-item list-group-item-warning">
+                                                    <div class="d-flex w-100 justify-content-between align-items-start">
+                                                        <!-- Checkbox for selection -->
+                                                        <div class="mr-3">
+                                                            <div class="custom-control custom-checkbox">
+                                                                <input type="checkbox" 
+                                                                       class="custom-control-input notification-checkbox" 
+                                                                       t-attf-id="notification-#{notification.id}"
+                                                                       name="selected_notifications"
+                                                                       t-attf-value="#{notification.id}"/>
+                                                                <label class="custom-control-label" t-attf-for="notification-#{notification.id}"></label>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <!-- Make notification content clickable -->
+                                                        <a t-attf-href="/my/notifications/mark-read/#{notification.id}" 
+                                                           class="flex-grow-1 text-decoration-none text-dark"
+                                                           style="cursor: pointer;">
+                                                            <h6 class="mb-1">
+                                                                <i t-attf-class="fa fa-#{notification.notification_type == 'phase_change' and 'exchange' or notification.notification_type == 'assignment' and 'user' or notification.notification_type == 'resolved' and 'check-circle' or notification.notification_type == 'closed' and 'times-circle' or 'comment'} text-primary"></i>
+                                                                <strong t-esc="notification.title"/>
+                                                                <t t-if="notification.ticket_id">
+                                                                    <span class="badge badge-info ml-2">
+                                                                        <i class="fa fa-ticket"></i> <t t-esc="notification.ticket_id.ticket_id"/>
+                                                                    </span>
+                                                                </t>
+                                                            </h6>
+                                                            <p class="mb-1" t-esc="notification.message"/>
+                                                            <small class="text-muted">
+                                                                <i class="fa fa-clock-o"></i>
+                                                                <t t-esc="notification.create_date.strftime('%B %d, %Y at %I:%M %p') if notification.create_date else 'Unknown'"/>
+                                                            </small>
+                                                        </a>
+                                                        <div class="ml-3 d-flex gap-2">
+                                                            <!-- Mark as Read Button (Tick) -->
+                                                            <a t-attf-href="/my/notifications/mark-read/#{notification.id}?redirect=notifications" 
+                                                               class="btn btn-sm btn-success"
+                                                               title="Mark as Read"
+                                                               style="margin-right: 5px;">
+                                                                <i class="fa fa-check"></i>
+                                                            </a>
+                                                            <!-- Delete Button -->
+                                                            <a t-attf-href="/my/notifications/delete/#{notification.id}" 
+                                                               class="btn btn-sm btn-danger"
+                                                               title="Delete"
+                                                               onclick="return confirm('Are you sure you want to delete this notification?');">
+                                                                <i class="fa fa-trash"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </t>
+
+                                <!-- Read Notifications Section -->
+                                <t t-if="read_notifications">
+                                    <div class="card shadow-sm mb-4">
+                                        <div class="card-header bg-light">
+                                            <h5 class="mb-0">
+                                                <i class="fa fa-check"></i> Read Notifications (<t t-esc="len(read_notifications)"/>)
+                                            </h5>
+                                        </div>
+                                        <div class="list-group list-group-flush">
+                                            <t t-foreach="read_notifications" t-as="notification">
+                                                <div class="list-group-item">
+                                                    <div class="d-flex w-100 justify-content-between align-items-start">
+                                                        <!-- Checkbox for selection -->
+                                                        <div class="mr-3">
+                                                            <div class="custom-control custom-checkbox">
+                                                                <input type="checkbox" 
+                                                                       class="custom-control-input notification-checkbox" 
+                                                                       t-attf-id="notification-#{notification.id}"
+                                                                       name="selected_notifications"
+                                                                       t-attf-value="#{notification.id}"/>
+                                                                <label class="custom-control-label" t-attf-for="notification-#{notification.id}"></label>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <!-- Make notification content clickable -->
+                                                        <a t-attf-href="/my/tickets/#{notification.ticket_id.id}" 
+                                                           t-if="notification.ticket_id"
+                                                           class="flex-grow-1 text-decoration-none"
+                                                           style="cursor: pointer;">
+                                                            <h6 class="mb-1 text-muted">
+                                                                <i t-attf-class="fa fa-#{notification.notification_type == 'phase_change' and 'exchange' or notification.notification_type == 'assignment' and 'user' or notification.notification_type == 'resolved' and 'check-circle' or notification.notification_type == 'closed' and 'times-circle' or 'comment'}"></i>
+                                                                <t t-esc="notification.title"/>
+                                                                <span class="badge badge-secondary ml-2">
+                                                                    <i class="fa fa-ticket"></i> <t t-esc="notification.ticket_id.ticket_id"/>
+                                                                </span>
+                                                            </h6>
+                                                            <p class="mb-1 text-muted" t-esc="notification.message"/>
+                                                            <small class="text-muted">
+                                                                <i class="fa fa-clock-o"></i>
+                                                                <t t-esc="notification.create_date.strftime('%B %d, %Y at %I:%M %p') if notification.create_date else 'Unknown'"/>
+                                                                <span class="ml-3">
+                                                                    <i class="fa fa-check-circle"></i>
+                                                                    Read on <t t-esc="notification.read_date.strftime('%B %d, %Y at %I:%M %p') if notification.read_date else 'Unknown'"/>
+                                                                </span>
+                                                            </small>
+                                                        </a>
+                                                        <!-- If no ticket, show non-clickable content -->
+                                                        <div t-if="not notification.ticket_id" class="flex-grow-1">
+                                                            <h6 class="mb-1 text-muted">
+                                                                <i t-attf-class="fa fa-#{notification.notification_type == 'phase_change' and 'exchange' or notification.notification_type == 'assignment' and 'user' or notification.notification_type == 'resolved' and 'check-circle' or notification.notification_type == 'closed' and 'times-circle' or 'comment'}"></i>
+                                                                <t t-esc="notification.title"/>
+                                                            </h6>
+                                                            <p class="mb-1 text-muted" t-esc="notification.message"/>
+                                                            <small class="text-muted">
+                                                                <i class="fa fa-clock-o"></i>
+                                                                <t t-esc="notification.create_date.strftime('%B %d, %Y at %I:%M %p') if notification.create_date else 'Unknown'"/>
+                                                            </small>
+                                                        </div>
+                                                        <div class="ml-3">
+                                                            <a t-attf-href="/my/notifications/delete/#{notification.id}" 
+                                                               class="btn btn-sm btn-danger"
+                                                               title="Delete"
+                                                               onclick="return confirm('Are you sure you want to delete this notification?');">
+                                                                <i class="fa fa-trash"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </t>
+                            </form>
                         </t>
 
                         <!-- No Notifications Message -->
@@ -179,11 +238,59 @@
                     padding: 0.25rem 0.5rem;
                     font-size: 0.875rem;
                 }
+                .custom-control-label {
+                    cursor: pointer;
+                }
             </style>
+
+            <!-- JavaScript for Select All functionality -->
+            <script type="text/javascript">
+                <![CDATA[
+                document.addEventListener('DOMContentLoaded', function() {
+                    var selectAllCheckbox = document.getElementById('select-all');
+                    var notificationCheckboxes = document.querySelectorAll('.notification-checkbox');
+                    var deleteSelectedBtn = document.getElementById('delete-selected-btn');
+
+                    // Select/Deselect all checkboxes
+                    if (selectAllCheckbox) {
+                        selectAllCheckbox.addEventListener('change', function() {
+                            notificationCheckboxes.forEach(function(checkbox) {
+                                checkbox.checked = selectAllCheckbox.checked;
+                            });
+                            updateDeleteButton();
+                        });
+                    }
+
+                    // Update select all checkbox and delete button when individual checkboxes change
+                    notificationCheckboxes.forEach(function(checkbox) {
+                        checkbox.addEventListener('change', function() {
+                            // Update "Select All" checkbox
+                            var allChecked = Array.from(notificationCheckboxes).every(cb => cb.checked);
+                            var noneChecked = Array.from(notificationCheckboxes).every(cb => !cb.checked);
+                            
+                            if (selectAllCheckbox) {
+                                selectAllCheckbox.checked = allChecked;
+                                selectAllCheckbox.indeterminate = !allChecked && !noneChecked;
+                            }
+                            
+                            updateDeleteButton();
+                        });
+                    });
+
+                    // Enable/disable delete button based on selection
+                    function updateDeleteButton() {
+                        var anyChecked = Array.from(notificationCheckboxes).some(cb => cb.checked);
+                        if (deleteSelectedBtn) {
+                            deleteSelectedBtn.disabled = !anyChecked;
+                        }
+                    }
+                });
+                ]]>
+            </script>
         </t>
     </template>
 
-    <!-- Add Notification Bell Icon to Portal Header -->
+    <!-- Notification Bell Icon to Portal Header -->
     <template id="portal_layout_notification_bell" name="Portal Notification Bell" inherit_id="portal.portal_breadcrumbs" priority="50">
         <xpath expr="//ol[hasclass('breadcrumb')]" position="after">
             <t t-set="unread_count" t-value="request.env['customer.support.notification'].sudo().search_count([('user_id', '=', request.env.uid), ('is_read', '=', False)])"/>
@@ -198,7 +305,7 @@
         </xpath>
     </template>
 
-    <!-- Add Notification Link to Portal My Home -->
+    <!-- Notification Link to Portal My Home -->
     <template id="portal_my_home_menu_notifications" name="Portal My Home Menu - Notifications" inherit_id="portal.portal_my_home" priority="25">
         <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
             <t t-set="unread_count" t-value="request.env['customer.support.notification'].sudo().search_count([('user_id', '=', request.env.uid), ('is_read', '=', False)])"/>

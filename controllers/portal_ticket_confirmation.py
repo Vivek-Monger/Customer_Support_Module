@@ -5,9 +5,7 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-
 class CustomerSupportTicketConfirmation(http.Controller):
-    
     def _priority_label(self, priority):
         return {
             '0': 'Low',
@@ -16,9 +14,7 @@ class CustomerSupportTicketConfirmation(http.Controller):
             '3': 'Urgent'
         }.get(priority, 'Low')
 
-    # ---------------------------------------
     # Confirmation Page
-    # ---------------------------------------
     @http.route(
         ['/my/tickets/create/confirm'],
         type='http',
@@ -100,9 +96,7 @@ class CustomerSupportTicketConfirmation(http.Controller):
             values
         )
 
-    # ---------------------------------------
     # Back to Edit
-    # ---------------------------------------
     @http.route(
         ['/my/tickets/create/edit'],
         type='http',
@@ -127,9 +121,7 @@ class CustomerSupportTicketConfirmation(http.Controller):
         # Redirect to create page with flag to load from session
         return request.redirect('/my/tickets/create?from_confirm=1')
 
-    # ---------------------------------------
     # Final Ticket Creation
-    # ---------------------------------------
     @http.route(
         ['/my/tickets/create/final'],
         type='http',
@@ -170,7 +162,7 @@ class CustomerSupportTicketConfirmation(http.Controller):
                 attachment = request.env['ir.attachment'].sudo().create({
                     'name': file_data['filename'],
                     'type': 'binary',
-                    'datas': file_data['content'],  # Already base64 encoded
+                    'datas': file_data['content'], 
                     'res_model': 'customer.support.module',
                     'res_id': ticket.id,
                     'mimetype': file_data['mimetype'],

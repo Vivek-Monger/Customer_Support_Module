@@ -6,9 +6,7 @@ class CustomerSupportDashboard(models.Model):
     _name = 'customer.support.overview'
     _description = 'Customer Support Dashboard'
 
-    # -------------------------
     # Ticket Analytics
-    # -------------------------
     open_tickets = fields.Integer(compute="_compute_metrics", store=False)
     total_tickets = fields.Integer(compute="_compute_metrics", store=False)
 
@@ -27,18 +25,14 @@ class CustomerSupportDashboard(models.Model):
     high_priority_failed = fields.Integer(compute="_compute_metrics", store=False)
     urgent_failed = fields.Integer(compute="_compute_metrics", store=False)
 
-    # -------------------------
     # Performance
-    # -------------------------
     today_closed = fields.Integer(compute="_compute_metrics", store=False)
     sla_last_7_days = fields.Float(compute="_compute_metrics", store=False)
 
     daily_target = fields.Float(default=80.0)
     sample_rate = fields.Float(default=85.0)
 
-    # -------------------------
     # Core Compute
-    # -------------------------
     @api.depends(
         'daily_target',  # dummy dependency to allow recompute
     )

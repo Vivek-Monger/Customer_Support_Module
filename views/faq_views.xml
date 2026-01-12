@@ -49,40 +49,6 @@
         </field>
     </record>
 
-    <!-- FAQ Search View 
-    <record id="view_customer_support_faq_search" model="ir.ui.view">
-        <field name="name">customer.support.faq.search</field>
-        <field name="model">customer.support.faq</field>
-        <field name="arch" type="xml">
-            <search string="Search FAQs">
-                <field name="name"/>
-                <field name="category_id"/>
-                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
-                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
-                <group expand="0" string="Group By">
-                    <filter string="Category" name="group_category" context="{'group_by': 'category_id'}"/>
-                    <filter string="Created By" name="group_created_by" context="{'group_by': 'created_by'}"/>
-                </group>
-            </search>
-        </field>
-    </record> -->
-
-    <!-- FAQ Action 
-    <record id="action_customer_support_faq" model="ir.actions.act_window">
-        <field name="name">FAQs</field>
-        <field name="res_model">customer.support.faq</field>
-        <field name="view_mode">tree,form</field>
-        <field name="context">{'search_default_active': 1}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Create your first FAQ
-            </p>
-            <p>
-                Add frequently asked questions to help customers find answers quickly.
-            </p>
-        </field>
-    </record> -->
-
     <!-- FAQ Category list View -->
     <record id="view_customer_support_faq_category_list" model="ir.ui.view">
         <field name="name">customer.support.faq.category.list</field>

@@ -236,7 +236,6 @@ class customer_support_module(models.Model):
             message_type='notification',
             subtype_xmlid='mail.mt_note'
         )
-    # ========== SLA NOTIFICATION METHODS - END ==========
     
     @api.model_create_multi
     def create(self, vals_list):

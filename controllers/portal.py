@@ -81,7 +81,6 @@ class CustomerSupportPortal(http.Controller):
             }
         )
 
-
     # Create Ticket (Submit)
 
     @http.route(
@@ -128,9 +127,7 @@ class CustomerSupportPortal(http.Controller):
 
         return request.redirect('/my/tickets')
 
-    # ---------------------------------------------------------
     # Reporting Dashboard
-    # ---------------------------------------------------------
     @http.route(
         ['/my/tickets/reporting', '/my/tickets/reporting/<string:graph_type>'],
         type='http',
@@ -307,7 +304,6 @@ class CustomerSupportPortal(http.Controller):
             'customer_support_module.portal_activity_log',
             {'activities': activities}
         )
-    # Add these routes to your existing CustomerSupportPortal class in portal.py
 
     @http.route(['/my/faq', '/my/faq/category/<int:category_id>'], type='http', auth='user', website=True)
     def portal_faq(self, category_id=None, search=None, **kwargs):
@@ -530,5 +526,48 @@ class CustomerSupportPortal(http.Controller):
         
         if notification.exists() and notification.user_id.id == request.env.uid:
             notification.unlink()
+        
+        return request.redirect('/my/notifications')
+    
+    @http.route(['/my/notifications/delete-all'], type='http', auth='user', website=True)
+    def portal_notification_delete_all(self, **kwargs):
+        """Delete all notifications for the current user"""
+        
+        Notification = request.env['customer.support.notification'].sudo()
+        notifications = Notification.search([('user_id', '=', request.env.uid)])
+        
+        if notifications:
+            notifications.unlink()
+        
+        return request.redirect('/my/notifications')
+
+
+    @http.route(['/my/notifications/delete-selected'], type='http', auth='user', website=True, methods=['POST'])
+    def portal_notification_delete_selected(self, **kwargs):
+        """Delete selected notifications"""
+        
+        import logging
+        _logger = logging.getLogger(__name__)
+        
+        try:
+            # Get selected notification IDs from form
+            selected_ids = request.httprequest.form.getlist('selected_notifications')
+            _logger.info(f"Selected notification IDs: {selected_ids}")
+            
+            if selected_ids:
+                Notification = request.env['customer.support.notification'].sudo()
+                
+                # Convert to integers and filter for current user's notifications only
+                notification_ids = [int(nid) for nid in selected_ids]
+                notifications = Notification.browse(notification_ids).filtered(
+                    lambda n: n.user_id.id == request.env.uid
+                )
+                
+                if notifications:
+                    notifications.unlink()
+                    _logger.info(f"Deleted {len(notifications)} notifications")
+            
+        except Exception as e:
+            _logger.error(f"Error deleting selected notifications: {str(e)}")
         
         return request.redirect('/my/notifications')

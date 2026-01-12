@@ -57,31 +57,6 @@
         </field>
     </record>
 
-    <!-- Notification Search View 
-    <record id="view_customer_support_notification_search" model="ir.ui.view">
-        <field name="name">customer.support.notification.search</field>
-        <field name="model">customer.support.notification</field>
-        <field name="arch" type="xml">
-            <search string="Search Notifications">
-                <field name="title"/>
-                <field name="user_id"/>
-                <field name="ticket_id"/>
-                <field name="notification_type"/>
-                <separator/>
-                <filter string="Unread" name="unread" domain="[('is_read', '=', False)]"/>
-                <filter string="Read" name="read" domain="[('is_read', '=', True)]"/>
-                <filter string="SLA Breaches" name="sla_breach" 
-                        domain="[('notification_type', '=', 'sla_breach')]"/>
-                <separator/>
-                <group expand="0" string="Group By">
-                    <filter string="User" name="group_user" context="{'group_by': 'user_id'}"/>
-                    <filter string="Type" name="group_type" context="{'group_by': 'notification_type'}"/>
-                    <filter string="Read Status" name="group_read" context="{'group_by': 'is_read'}"/>
-                </group>
-            </search>
-        </field>
-    </record> -->
-
     <!-- Notification Action -->
     <record id="action_customer_support_notification" model="ir.actions.act_window">
         <field name="name">Notifications</field>

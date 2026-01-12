@@ -36,9 +36,7 @@ class UserManager(models.Model):
             if self.env['res.users'].sudo().search([('login', '=', email)], limit=1):
                 raise ValidationError(f"User with email {email} already exists.")
 
-            # --------------------------------------------------
             # CUSTOMER → PORTAL USER
-            # --------------------------------------------------
             if role == 'customer':
                 partner = self.env['res.partner'].sudo().create({
                     'name': name,
@@ -61,9 +59,7 @@ class UserManager(models.Model):
                     'user_ids': [(4, user.id)]
                 })
 
-            # --------------------------------------------------
             # SUPPORT AGENT → INTERNAL USER
-            # --------------------------------------------------
             elif role == 'support_agent':
                 user = self.env['res.users'].sudo().create({
                     'name': name,
