@@ -8,3 +8,4 @@ from . import support_dashboard
 from . import overview
 from . import faq
 from . import notification
+from . import activity_log

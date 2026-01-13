@@ -5,7 +5,11 @@
         <field name="name">customer.support.overview.form</field>
         <field name="model">customer.support.overview</field>
         <field name="arch" type="xml">
-            <form string="Support Overview Dashboard">
+            <form string="Support Overview Dashboard"
+                    create="false"
+                    edit="false"
+                    delete="false"
+                    class="o_support_overview_dashboard">
                 <sheet>
 
                     <group string="Ticket Analytics" col="4">
@@ -33,6 +37,7 @@
                     </group>
 
                 </sheet>
+                
             </form>
         </field>
     </record>

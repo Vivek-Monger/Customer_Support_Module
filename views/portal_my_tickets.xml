@@ -28,7 +28,7 @@
           </div>
         </div>
 
-        <!-- ================= LIST VIEW ================= -->
+        <!-- LIST VIEW -->
         <t t-if="current_view == 'list'">
 
           <table class="table table-striped">
@@ -73,7 +73,7 @@
 
         </t>
 
-        <!-- ================= KANBAN VIEW ================= -->
+        <!--  KANBAN VIEW  -->
         <t t-if="current_view == 'kanban'">
 
           <div class="row">

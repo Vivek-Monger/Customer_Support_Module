@@ -1,0 +1,317 @@
+
+
+/* LIST VIEW CONTAINER SETUP */
+
+.o_list_view_card_style {
+    background: #f8fafc !important;
+}
+
+.o_list_view_card_style .o_list_renderer {
+    background: transparent !important;
+}
+
+/* Hide table headers */
+.o_list_view_card_style .o_list_table thead {
+    display: none !important;
+}
+
+/* Style the table body as card container */
+.o_list_view_card_style .o_list_table {
+    border: none !important;
+    background: transparent !important;
+}
+
+.o_list_view_card_style .o_list_table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding: 16px !important;
+}
+
+/*TRANSFORM ROWS INTO CARDS */
+
+.o_list_view_card_style .o_list_table tbody .o_data_row {
+    display: grid !important;
+    grid-template-columns: auto 1fr auto !important;
+    grid-template-areas:
+        "ticketid ticketid metadata"
+        "subject subject subject"
+        "description description description"
+        "project project assignee" !important;
+    gap: 12px 16px !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-left: 4px solid #06b6d4 !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+}
+
+.o_list_view_card_style .o_list_table tbody .o_data_row:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+    border-left-color: #0891b2 !important;
+}
+
+/* Remove default cell styling */
+.o_list_view_card_style .o_list_table tbody .o_data_row td {
+    border: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+    vertical-align: top !important;
+}
+
+/* GRID LAYOUT ASSIGNMENTS */
+
+/* Ticket ID - Top Left */
+.o_list_view_card_style .o_data_row td[name="ticket_id"] {
+    grid-area: ticketid !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* Subject - Title (Full Width) */
+.o_list_view_card_style .o_data_row td[name="subject"] {
+    grid-area: subject !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #0f172a !important;
+    line-height: 1.5 !important;
+}
+
+/* Description - Body (Full Width) */
+.o_list_view_card_style .o_data_row td[name="description"] {
+    grid-area: description !important;
+    font-size: 14px !important;
+    color: #64748b !important;
+    line-height: 1.6 !important;
+    max-height: 3.2em !important;
+    overflow: hidden !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+}
+
+/* Project - Bottom Left */
+.o_list_view_card_style .o_data_row td[name="project_id"] {
+    grid-area: project !important;
+}
+
+/* Hidden fields for decoration logic */
+.o_list_view_card_style .o_data_row td[name="priority"],
+.o_list_view_card_style .o_data_row td[name="phase_id"],
+.o_list_view_card_style .o_data_row td[name="create_date"],
+.o_list_view_card_style .o_data_row td[name="assigned_user_id"],
+.o_list_view_card_style .o_data_row td[name="id"] {
+    display: none !important;
+}
+
+/* PROJECT BADGE STYLING */
+
+.o_list_view_card_style .o_data_row td[name="project_id"] {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 6px 12px !important;
+    background: #e0f2fe !important;
+    border-radius: 6px !important;
+    font-size: 12px !important;
+    color: #0369a1 !important;
+    font-weight: 500 !important;
+    width: fit-content !important;
+}
+
+.o_list_view_card_style .o_data_row td[name="project_id"]::before {
+    content: '📁 ';
+    font-size: 14px !important;
+}
+
+/* STATUS/PHASE BADGES (Using CSS Pseudo-elements)*/
+
+/* Add badge container in header */
+.o_list_view_card_style .o_data_row td[name="ticket_id"]::after {
+    content: '';
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    margin-left: 12px;
+    display: inline-block;
+}
+
+/* In Progress Badge (decoration-info = blue) */
+.o_list_view_card_style .o_data_row.text-info td[name="ticket_id"]::after {
+    content: 'In Progress';
+    background: #0369a1;
+    color: #ffffff;
+}
+
+.o_list_view_card_style .o_data_row.text-info {
+    border-left-color: #2563eb !important;
+}
+
+/* High Priority Badge (decoration-warning = orange) */
+.o_list_view_card_style .o_data_row.text-warning td[name="ticket_id"]::after {
+    content: 'High';
+    background: #ea580c;
+    color: #ffffff;
+}
+
+.o_list_view_card_style .o_data_row.text-warning {
+    border-left-color: #ea580c !important;
+}
+
+/* Urgent Badge (decoration-danger = red) */
+.o_list_view_card_style .o_data_row.text-danger td[name="ticket_id"]::after {
+    content: 'Urgent';
+    background: #dc2626;
+    color: #ffffff;
+}
+
+.o_list_view_card_style .o_data_row.text-danger {
+    border-left-color: #dc2626 !important;
+}
+
+/* PRIORITY BADGE (Right side) */
+
+.o_list_view_card_style .o_data_row td[name="ticket_id"]::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Default Low priority */
+.o_list_view_card_style .o_data_row td[name="ticket_id"]::before {
+    content: 'Low';
+    background: #06b6d4;
+    color: #ffffff;
+}
+
+/* Override for other priorities using decorations */
+.o_list_view_card_style .o_data_row.text-info td[name="ticket_id"]::before {
+    content: 'Medium';
+    background: #2563eb;
+}
+
+.o_list_view_card_style .o_data_row.text-warning td[name="ticket_id"]::before {
+    content: 'High';
+    background: #ea580c;
+}
+
+.o_list_view_card_style .o_data_row.text-danger td[name="ticket_id"]::before {
+    content: 'Urgent';
+    background: #dc2626;
+}
+
+/* HOVER EFFECTS */
+
+.o_list_view_card_style .o_data_row:hover td[name="subject"] {
+    color: #6366f1 !important;
+}
+
+.o_list_view_card_style .o_data_row:hover td[name="project_id"] {
+    background: #bfdbfe !important;
+}
+
+/* CHECKBOX STYLING */
+
+.o_list_view_card_style .o_list_record_selector {
+    position: absolute !important;
+    top: 18px !important;
+    left: 20px !important;
+    z-index: 10 !important;
+}
+
+.o_list_view_card_style .o_data_row {
+    position: relative !important;
+}
+
+/* Adjust layout when checkbox is present */
+.o_list_view_card_style .o_data_row.o_selected_row td[name="ticket_id"] {
+    margin-left: 24px !important;
+}
+
+/* ANIMATIONS*/
+
+.o_list_view_card_style .o_data_row {
+    animation: fadeInUp 0.4s ease !important;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* RESPONSIVE DESIGN */
+
+@media (max-width: 768px) {
+    .o_list_view_card_style .o_list_table tbody {
+        padding: 8px !important;
+    }
+    
+    .o_list_view_card_style .o_data_row {
+        padding: 16px !important;
+        grid-template-areas:
+            "ticketid ticketid"
+            "subject subject"
+            "description description"
+            "project project" !important;
+    }
+    
+    .o_list_view_card_style .o_data_row td[name="ticket_id"]::before {
+        position: static !important;
+        margin-left: 8px !important;
+    }
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+
+.o_list_view_card_style .o_nocontent_help {
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    padding: 48px !important;
+    margin: 16px !important;
+    border: 2px dashed #e2e8f0 !important;
+}
+
+/* FOCUS STATES (Accessibility)*/
+
+.o_list_view_card_style .o_data_row:focus-visible {
+    outline: 3px solid #6366f1 !important;
+    outline-offset: 2px !important;
+}
+
+/* SELECTION HIGHLIGHT */
+
+.o_list_view_card_style .o_data_row.o_selected_row {
+    background: #f0f9ff !important;
+    border-color: #0ea5e9 !important;
+}
+
+/* PAGER STYLING*/
+
+.o_list_view_card_style .o_pager {
+    background: #ffffff !important;
+    border-radius: 8px !important;
+    padding: 8px 16px !important;
+    margin: 8px 16px !important;
+    border: 1px solid #e2e8f0 !important;
+}

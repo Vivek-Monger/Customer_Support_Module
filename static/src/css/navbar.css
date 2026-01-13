@@ -1,0 +1,143 @@
+/* 
+ * Custom Menu Bar Styling with Matching Button Backgrounds
+ * Place this file in: your_module/static/src/css/custom.css
+ */
+
+/* ============================================
+   MAIN NAVIGATION BAR STYLING
+   ============================================ */
+
+/* Main navbar background color */
+.o_main_navbar {
+    background-color: #5b4f8f !important; /* Purple color from your screenshot */
+}
+
+/* ============================================
+   MENU BUTTONS - SAME AS NAVBAR BACKGROUND
+   ============================================ */
+
+/* Make all menu items have the same background as navbar (invisible/seamless) */
+.o_main_navbar .o_menu_sections .dropdown-toggle,
+.o_main_navbar .o_menu_sections a,
+.o_main_navbar .o_menu_brand {
+    background-color: transparent !important;
+    color: #ffffff !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border: none !important;
+}
+
+/* ============================================
+   HOVER EFFECTS - VISUAL FEEDBACK
+   ============================================ */
+
+/* When hovering over menu items, change background to darker shade */
+.o_main_navbar .o_menu_sections .dropdown-toggle:hover,
+.o_main_navbar .o_menu_sections a:hover {
+    background-color: #4a3f73 !important; /* Darker purple */
+    color: #ffffff !important;
+}
+
+/* Active/selected menu item - even darker to show current location */
+.o_main_navbar .o_menu_sections .dropdown-toggle.show,
+.o_main_navbar .o_menu_sections .dropdown-toggle:focus,
+.o_main_navbar .o_menu_sections .dropdown-toggle.active,
+.o_main_navbar .o_menu_sections .active > a {
+    background-color: #3d3360 !important; /* Darkest purple for active state */
+    color: #ffffff !important;
+}
+
+/* Menu brand (company name) hover effect */
+.o_main_navbar .o_menu_brand:hover {
+    background-color: #4a3f73 !important;
+}
+
+/* ============================================
+   SYSTEM TRAY ICONS (right side: notifications, user, etc.)
+   ============================================ */
+
+/* System tray items - same background as navbar */
+.o_main_navbar .o_menu_systray > .dropdown > .dropdown-toggle,
+.o_main_navbar .o_menu_systray > a {
+    background-color: transparent !important;
+    color: #ffffff !important;
+    transition: background-color 0.3s ease;
+}
+
+/* System tray hover effect */
+.o_main_navbar .o_menu_systray > .dropdown > .dropdown-toggle:hover,
+.o_main_navbar .o_menu_systray > a:hover {
+    background-color: #4a3f73 !important;
+}
+
+/* System tray active/open dropdown */
+.o_main_navbar .o_menu_systray > .dropdown.show > .dropdown-toggle {
+    background-color: #3d3360 !important;
+}
+
+/* ============================================
+   SMOOTH TRANSITIONS
+   ============================================ */
+
+/* Smooth transition for all interactive elements */
+.o_main_navbar .o_menu_sections .dropdown-toggle,
+.o_main_navbar .o_menu_sections a,
+.o_main_navbar .o_menu_brand,
+.o_main_navbar .o_menu_systray > * {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Subtle lift effect on hover (optional) */
+.o_main_navbar .o_menu_sections .dropdown-toggle:hover,
+.o_main_navbar .o_menu_sections a:hover {
+    transform: translateY(-1px);
+}
+
+/* ============================================
+   DROPDOWN MENUS
+   ============================================ */
+
+/* Dropdown menu styling to match theme */
+.o_main_navbar .dropdown-menu {
+    border-top: 3px solid #5b4f8f !important;
+}
+
+/* Dropdown items hover */
+.o_main_navbar .dropdown-menu .dropdown-item:hover {
+    background-color: #f0f0f0 !important;
+}
+
+/* ============================================
+   NOTIFICATION BADGES
+   ============================================ */
+
+/* Badge styling for notification counts */
+.o_main_navbar .badge {
+    background-color: #e74c3c !important;
+    color: #ffffff !important;
+}
+
+/* ============================================
+   MOBILE RESPONSIVE
+   ============================================ */
+
+@media (max-width: 767px) {
+    .o_main_navbar {
+        background-color: #5b4f8f !important;
+    }
+    
+    .o_main_navbar .o_menu_sections .dropdown-toggle:hover {
+        background-color: #4a3f73 !important;
+    }
+}
+
+/* ============================================
+   FOCUS STATES (for keyboard navigation)
+   ============================================ */
+
+/* Ensure keyboard navigation is visible */
+.o_main_navbar .o_menu_sections .dropdown-toggle:focus-visible,
+.o_main_navbar .o_menu_sections a:focus-visible {
+    outline: 2px solid #ffffff !important;
+    outline-offset: -2px;
+    background-color: #4a3f73 !important;
+}

@@ -1,0 +1,220 @@
+/* Custom Kanban View Styling for Customer Support Module */
+
+/* Kanban Column Headers */
+.o_kanban_view .o_kanban_group_header {
+    background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%) !important;
+    color: white !important;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 15px 20px !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+}
+
+/* Different colors for each column */
+.o_kanban_view .o_kanban_group:nth-child(1) .o_kanban_group_header {
+    background: linear-gradient(135deg, #0288d1 0%, #0277bd 100%) !important;
+}
+
+.o_kanban_view .o_kanban_group:nth-child(2) .o_kanban_group_header {
+    background: linear-gradient(135deg, #0288d1 0%, #0277bd 100%) !important;
+}
+
+.o_kanban_view .o_kanban_group:nth-child(3) .o_kanban_group_header {
+    background: linear-gradient(135deg, #0288d1 0%, #0277bd 100%) !important;
+}
+
+.o_kanban_view .o_kanban_group:nth-child(4) .o_kanban_group_header {
+    background: linear-gradient(135deg, #0288d1 0%, #0277bd 100%) !important;
+}
+
+.o_kanban_view .o_kanban_group:nth-child(5) .o_kanban_group_header {
+    background: linear-gradient(135deg, #0288d1 0%, #0277bd 100%) !important;
+}
+
+/* Kanban Column Header Title */
+.o_kanban_view .o_kanban_group_header .o_column_title {
+    color: white !important;
+    font-weight: 600 !important;
+    text-transform: capitalize !important;
+}
+
+/* Record Count Badge in Header */
+.o_kanban_view .o_kanban_group_header .o_kanban_counter {
+    background: white !important;
+    color: #0277bd !important;
+    border-radius: 20px !important;
+    padding: 4px 12px !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    min-width: 30px !important;
+    text-align: center !important;
+    display: inline-block !important;
+    margin-left: 8px !important;
+}
+
+/* Kanban Column Body */
+.o_kanban_view .o_kanban_group {
+    background: #f5f7fa !important;
+    border-radius: 12px !important;
+    margin: 0 8px !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08) !important;
+}
+
+/* Kanban Cards Container */
+.o_kanban_view .o_kanban_record_container {
+    background: #f5f7fa !important;
+    padding: 12px !important;
+    border-radius: 0 0 12px 12px !important;
+}
+
+/* Individual Kanban Cards */
+.o_kanban_view .oe_kanban_card {
+    background: white !important;
+    border: 1px solid #e3e8ef !important;
+    border-radius: 10px !important;
+    padding: 16px !important;
+    margin-bottom: 12px !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+}
+
+.o_kanban_view .oe_kanban_card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
+    transform: translateY(-2px) !important;
+    border-color: #0288d1 !important;
+}
+
+/* Ticket ID Styling */
+.o_kanban_view .oe_kanban_card strong {
+    color: #1e293b !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    display: block !important;
+    margin-bottom: 8px !important;
+}
+
+/* Subject/Description Text */
+.o_kanban_view .oe_kanban_card > div:nth-child(2) {
+    color: #475569 !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+    margin-bottom: 12px !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+}
+
+/* Date/Time Badge Styling */
+.o_kanban_view .oe_kanban_card .badge,
+.o_kanban_view .oe_kanban_card span[style*="background"] {
+    background: #e0f2fe !important;
+    color: #0369a1 !important;
+    border-radius: 6px !important;
+    padding: 4px 10px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    margin-top: 8px !important;
+}
+
+.o_kanban_view .oe_kanban_card .badge i,
+.o_kanban_view .oe_kanban_card span[style*="background"] i {
+    margin-right: 4px !important;
+}
+
+/* Priority Badge Colors */
+.o_kanban_view .o_priority_star.fa-star {
+    color: #fbbf24 !important;
+}
+
+/* Priority Badges - Custom Styling */
+.o_kanban_view .oe_kanban_card .badge.badge-danger,
+.o_kanban_view .oe_kanban_card span[style*="red"] {
+    background: #fee2e2 !important;
+    color: #dc2626 !important;
+}
+
+.o_kanban_view .oe_kanban_card .badge.badge-warning,
+.o_kanban_view .oe_kanban_card span[style*="orange"] {
+    background: #fed7aa !important;
+    color: #ea580c !important;
+}
+
+.o_kanban_view .oe_kanban_card .badge.badge-info,
+.o_kanban_view .oe_kanban_card span[style*="blue"] {
+    background: #dbeafe !important;
+    color: #2563eb !important;
+}
+
+.o_kanban_view .oe_kanban_card .badge.badge-success,
+.o_kanban_view .oe_kanban_card span[style*="green"] {
+    background: #dcfce7 !important;
+    color: #16a34a !important;
+}
+
+/* Assigned User Avatar/Name */
+.o_kanban_view .oe_kanban_card .o_field_many2one {
+    color: #64748b !important;
+    font-size: 12px !important;
+    margin-top: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* Remove default Odoo styling */
+.o_kanban_view .o_kanban_group {
+    background: #f5f7fa !important;
+}
+
+/* Card Footer Area */
+.o_kanban_view .oe_kanban_card .o_kanban_record_bottom {
+    margin-top: 12px !important;
+    padding-top: 12px !important;
+    border-top: 1px solid #e5e7eb !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+/* Drag and Drop Styling */
+.o_kanban_view .ui-sortable-helper {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+    transform: rotate(2deg) !important;
+}
+
+.o_kanban_view .o_kanban_record.ui-sortable-placeholder {
+    background: #e0f2fe !important;
+    border: 2px dashed #0284c7 !important;
+    visibility: visible !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1400px) {
+    .o_kanban_view .o_kanban_group {
+        min-width: 250px !important;
+    }
+}
+
+/* Scrollbar Styling for Kanban Columns */
+.o_kanban_view .o_kanban_group::-webkit-scrollbar {
+    width: 6px;
+}
+
+.o_kanban_view .o_kanban_group::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.o_kanban_view .o_kanban_group::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.o_kanban_view .o_kanban_group::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

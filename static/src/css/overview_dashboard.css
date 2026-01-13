@@ -1,0 +1,32 @@
+/* Hide the entire control panel (breadcrumb bar) for overview dashboard */
+.o_action_manager:has([data-res-model="customer.support.overview"]) .o_control_panel {
+    display: none !important;
+}
+
+/* Alternative selector */
+body:has([data-res-model="customer.support.overview"]) .o_control_panel {
+    display: none !important;
+}
+
+/* Remove top padding/margin when control panel is hidden */
+.o_action_manager:has([data-res-model="customer.support.overview"]) .o_content {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* For form view specifically */
+.o_form_view[data-res-model="customer.support.overview"] ~ .o_control_panel,
+.o_form_view.o_support_overview_dashboard ~ .o_control_panel {
+    display: none !important;
+}
+
+/* Hide breadcrumb container */
+.o_support_overview_dashboard .o_control_panel,
+.o_support_overview_dashboard + .o_control_panel {
+    display: none !important;
+}
+
+/* Ensure content fills the space */
+.o_action_manager .o_form_view.o_support_overview_dashboard {
+    padding-top: 16px !important;
+}

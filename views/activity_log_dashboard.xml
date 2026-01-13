@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Activity Log Kanban/Dashboard View -->
+    <record id="view_customer_support_activity_log_kanban" model="ir.ui.view">
+        <field name="name">customer.support.activity.log.kanban</field>
+        <field name="model">customer.support.activity.log</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard o_kanban_activity_log" create="false" edit="false" delete="false">
+                <field name="id"/>
+                <field name="activity_type"/>
+                <field name="activity_date"/>
+                <field name="ticket_id"/>
+                <field name="ticket_subject"/>
+                <field name="user_id"/>
+                <field name="description"/>
+                <field name="ticket_priority"/>
+                <field name="ticket_phase"/>
+                <field name="old_value"/>
+                <field name="new_value"/>
+                <field name="old_user_id"/>
+                <field name="new_user_id"/>
+                
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <!-- Header -->
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="ticket_id"/> - <field name="ticket_subject"/>
+                                    </strong>
+                                    <div class="o_kanban_record_subtitle text-muted">
+                                        <i class="fa fa-clock-o"/> 
+                                        <field name="activity_date" widget="relative"/>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_top_right">
+                                    <field name="ticket_priority" widget="priority"/>
+                                </div>
+                            </div>
+                            
+                            <!-- Body -->
+                            <div class="o_kanban_record_body">
+                                <div class="row mb-2">
+                                    <div class="col-6">
+                                        <span class="badge" 
+                                              t-attf-class="badge-#{record.activity_type.raw_value === 'created' ? 'info' : record.activity_type.raw_value === 'sla_breach' ? 'warning' : (record.activity_type.raw_value === 'resolved' || record.activity_type.raw_value === 'closed') ? 'success' : 'primary'}">
+                                            <field name="activity_type"/>
+                                        </span>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <field name="ticket_phase" widget="badge"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-muted mb-2">
+                                    <i class="fa fa-comment-o"/> 
+                                    <field name="description"/>
+                                </div>
+                                
+                                <div t-if="record.old_value.raw_value or record.new_value.raw_value" class="small text-muted">
+                                    <span t-if="record.old_value.raw_value">
+                                        <strong>From:</strong> <field name="old_value"/>
+                                    </span>
+                                    <span t-if="record.new_value.raw_value" class="ms-2">
+                                        <strong>To:</strong> <field name="new_value"/>
+                                    </span>
+                                </div>
+                                
+                                <div t-if="record.old_user_id.raw_value or record.new_user_id.raw_value" class="small text-muted">
+                                    <span t-if="record.old_user_id.raw_value">
+                                        <strong>From:</strong> <field name="old_user_id"/>
+                                    </span>
+                                    <span t-if="record.new_user_id.raw_value" class="ms-2">
+                                        <strong>To:</strong> <field name="new_user_id"/>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Footer -->
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <span class="text-muted">
+                                        <i class="fa fa-user"/> 
+                                        <field name="user_id" widget="many2one_avatar_user"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Activity Log List View -->
+    <record id="view_customer_support_activity_log_list" model="ir.ui.view">
+        <field name="name">customer.support.activity.log.list</field>
+        <field name="model">customer.support.activity.log</field>
+        <field name="arch" type="xml">
+            <list string="Activity Log" 
+                  decoration-info="activity_type == 'created'" 
+                  decoration-success="activity_type in ('resolved', 'closed')"
+                  decoration-warning="activity_type == 'sla_breach'"
+                  decoration-primary="activity_type in ('assigned', 'reassigned')"
+                  create="false">
+                <field name="activity_date"/>
+                <field name="ticket_id"/>
+                <field name="ticket_subject"/>
+                <field name="activity_type"/>
+                <field name="description"/>
+                <field name="user_id"/>
+                <field name="ticket_priority" widget="priority"/>
+                <field name="ticket_phase" widget="badge" 
+                       decoration-info="ticket_phase == 'new'"
+                       decoration-warning="ticket_phase == 'open'"
+                       decoration-primary="ticket_phase == 'in_progress'"
+                       decoration-success="ticket_phase == 'resolved'"
+                       decoration-muted="ticket_phase == 'closed'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Activity Log Form View -->
+    <record id="view_customer_support_activity_log_form" model="ir.ui.view">
+        <field name="name">customer.support.activity.log.form</field>
+        <field name="model">customer.support.activity.log</field>
+        <field name="arch" type="xml">
+            <form string="Activity Log Entry" create="false" edit="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="activity_type" readonly="1"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="Activity Information">
+                            <field name="ticket_id" readonly="1"/>
+                            <field name="ticket_subject" readonly="1"/>
+                            <field name="activity_date" readonly="1"/>
+                            <field name="user_id" readonly="1"/>
+                        </group>
+                        
+                        <group string="Ticket Details">
+                            <field name="ticket_priority" readonly="1" widget="priority"/>
+                            <field name="ticket_phase" readonly="1" widget="badge"/>
+                            <field name="customer_id" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Description">
+                        <field name="description" nolabel="1" readonly="1"/>
+                    </group>
+                    
+                    <group string="Change Details" invisible="activity_type not in ['phase_change', 'priority_change', 'assigned', 'reassigned']">
+                        <group>
+                            <field name="old_value" readonly="1" invisible="not old_value"/>
+                            <field name="old_user_id" readonly="1" invisible="not old_user_id"/>
+                        </group>
+                        <group>
+                            <field name="new_value" readonly="1" invisible="not new_value"/>
+                            <field name="new_user_id" readonly="1" invisible="not new_user_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Activity Log Calendar View -->
+    <record id="view_customer_support_activity_log_calendar" model="ir.ui.view">
+        <field name="name">customer.support.activity.log.calendar</field>
+        <field name="model">customer.support.activity.log</field>
+        <field name="arch" type="xml">
+            <calendar string="Activity Calendar" date_start="activity_date" color="activity_type" mode="month">
+                <field name="ticket_id"/>
+                <field name="activity_type"/>
+                <field name="user_id"/>
+                <field name="description"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Activity Log Pivot View -->
+    <record id="view_customer_support_activity_log_pivot" model="ir.ui.view">
+        <field name="name">customer.support.activity.log.pivot</field>
+        <field name="model">customer.support.activity.log</field>
+        <field name="arch" type="xml">
+            <pivot string="Activity Analysis">
+                <field name="activity_type" type="row"/>
+                <field name="user_id" type="row"/>
+                <field name="activity_date" interval="day" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Activity Log Graph View -->
+    <record id="view_customer_support_activity_log_graph" model="ir.ui.view">
+        <field name="name">customer.support.activity.log.graph</field>
+        <field name="model">customer.support.activity.log</field>
+        <field name="arch" type="xml">
+            <graph string="Activity Statistics" type="bar">
+                <field name="activity_type"/>
+                <field name="activity_date" interval="day"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Activity Log Action -->
+    <record id="action_customer_support_activity_log" model="ir.actions.act_window">
+        <field name="name">Activity Dashboard</field>
+        <field name="res_model">customer.support.activity.log</field>
+        <field name="view_mode">kanban,list,form,calendar,pivot,graph</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No activities logged yet
+            </p>
+            <p>
+                Activity logs are automatically created when tickets are created, modified, or have their status changed.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_customer_support_activity_log"
+              name="Activity Dashboard"
+              parent="customer_support_module.menu_customer_support_root"
+              action="action_customer_support_activity_log"
+              sequence="60"/>
+
+</odoo>

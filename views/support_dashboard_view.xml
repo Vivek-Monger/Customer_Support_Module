@@ -8,7 +8,8 @@
                 <form string="Support Dashboard"
                       create="false"
                       edit="false"
-                      delete="false">
+                      delete="false"
+                      class="o_support_overview_dashboard">
 
                     <sheet>
 

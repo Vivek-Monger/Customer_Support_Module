@@ -21,3 +21,5 @@ access_customer_support_faq_category_portal,customer.support.faq.category.portal
 
 access_customer_support_notification_user,customer.support.notification.user,model_customer_support_notification,base.group_user,1,1,1,1
 access_customer_support_notification_portal,customer.support.notification.portal,model_customer_support_notification,base.group_portal,1,1,0,1
+
+access_customer_support_activity_log_all,customer.support.activity.log.all,model_customer_support_activity_log,base.group_user,1,1,1,1
