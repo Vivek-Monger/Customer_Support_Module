@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
-import { Component, useState, onWillStart, useRef, onPatched } from "@odoo/owl";
+import { Component, useState, onWillStart } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { markup } from "@odoo/owl";
 
@@ -9,6 +9,7 @@ class FAQDashboard extends Component {
     setup() {
         this.orm = useService("orm");
         this.notification = useService("notification");
+        
         this.state = useState({
             faqs: [],
             categories: [],
@@ -145,7 +146,7 @@ class FAQDashboard extends Component {
         }
     }
 
-    async editFAQ(faq) {
+    editFAQ(faq) {
         this.state.showForm = true;
         this.state.editingId = faq.id;
         this.state.question = faq.name;
@@ -174,10 +175,6 @@ class FAQDashboard extends Component {
 
     onQuestionChange(ev) {
         this.state.question = ev.target.value;
-    }
-
-    onAnswerChange(ev) {
-        this.state.answer = ev.target.value;
     }
 
     onCategoryChange(ev) {

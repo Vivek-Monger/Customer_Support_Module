@@ -1,115 +1,115 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="customer_support_module.FAQDashboardTemplate" owl="1">
-        <div class="container-fluid mt-3 faq-dashboard">
-            <!-- Header -->
-            <div class="row mb-4">
-                <div class="col-12 d-flex justify-content-between align-items-center">
-                    <h2 class="mb-0">Frequently Asked Questions</h2>
-                    <button class="btn btn-primary" t-on-click="() => this.showAddForm()">
-                        <i class="fa fa-plus"/> Add FAQ
-                    </button>
-                </div>
-            </div>
-
-            <!-- Add/Edit FAQ Form -->
-            <div class="row mb-4" t-if="state.showForm">
-                <div class="col-12">
-                    <div class="card" style="background-color: #f8f9fa;">
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label class="font-weight-bold text-primary">Question</label>
-                                <input 
-                                    type="text" 
-                                    class="form-control" 
-                                    placeholder="How do I reset my password?"
-                                    t-model="state.question"
-                                    t-on-input="(ev) => this.onQuestionChange(ev)"
-                                />
-                            </div>
-                            <div class="form-group" t-if="state.categories.length > 0">
-                                <label class="font-weight-bold text-primary">Category</label>
-                                <select 
-                                    class="form-control"
-                                    t-model="state.categoryId"
-                                    t-on-change="(ev) => this.onCategoryChange(ev)">
-                                    <option value="">Select a category</option>
-                                    <t t-foreach="state.categories" t-as="category" t-key="category.id">
-                                        <option t-att-value="category.id" t-esc="category.name"/>
-                                    </t>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="font-weight-bold text-primary">Answer</label>
-                                <textarea 
-                                    class="form-control" 
-                                    rows="4" 
-                                    placeholder="Enter the answer here (HTML supported)..."
-                                    t-att-value="state.answer"
-                                    t-on-input="(ev) => this.onAnswerChange(ev)"
-                                />
-                                <small class="form-text text-muted">Basic HTML tags like &lt;p&gt;, &lt;strong&gt;, &lt;em&gt; are supported</small>
-                            </div>
-                            <div class="form-group mb-0">
-                                <button class="btn btn-primary" t-on-click="() => this.saveFAQ()">
-                                    Save
-                                </button>
-                                <button class="btn btn-secondary ml-2" t-on-click="() => this.hideForm()">
-                                    Cancel
-                                </button>
-                            </div>
-                        </div>
+        <div class="faq-dashboard" style="height: 100vh; display: flex; flex-direction: column;">
+            <div class="container-fluid mt-3" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+                <!-- Header -->
+                <div class="row mb-4" style="flex-shrink: 0;">
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        <h2 class="mb-0">Frequently Asked Questions</h2>
+                        <button class="btn btn-primary" t-on-click="() => this.showAddForm()">
+                            <i class="fa fa-plus"/> Add FAQ
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <!-- FAQ Cards List -->
-            <div class="row">
-                <t t-foreach="state.faqs" t-as="faq" t-key="faq.id">
-                    <div class="col-12 mb-3">
-                        <div class="card shadow-sm faq-card" 
-                             style="border: 2px dashed #0dcaf0;">
-                            <div class="card-body" style="background-color: #e7f6fd;">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-2" style="color: #0d6efd;">
-                                            <i class="fa fa-question-circle mr-2"/>
-                                            <t t-esc="faq.name"/>
-                                        </h5>
-                                        <div class="mb-2" style="color: #0d6efd !important;">
-                                            <t t-out="faq.answerMarkup"/>
-                                        </div>
-                                        <small class="text-muted">
-                                            <t t-esc="faq.last_updated"/>
-                                        </small>
-                                    </div>
-                                    <div class="ml-3 d-flex">
-                                        <button 
-                                            class="btn btn-link text-primary p-1" 
-                                            t-on-click="() => this.editFAQ(faq)"
-                                            title="Edit">
-                                            <i class="fa fa-pencil"/>
-                                        </button>
-                                        <button 
-                                            class="btn btn-link text-danger p-1 ml-1" 
-                                            t-on-click="() => this.deleteFAQ(faq.id)"
-                                            title="Delete">
-                                            <i class="fa fa-trash"/>
-                                        </button>
-                                    </div>
+                <!-- Add/Edit FAQ Form -->
+                <div class="row mb-4" t-if="state.showForm" style="flex-shrink: 0;">
+                    <div class="col-12">
+                        <div class="card" style="background-color: #f8f9fa;">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-primary">Question</label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        placeholder="How do I reset my password?"
+                                        t-model="state.question"
+                                        t-on-input="(ev) => this.onQuestionChange(ev)"
+                                    />
+                                </div>
+                                <div class="form-group" t-if="state.categories.length > 0">
+                                    <label class="font-weight-bold text-primary">Category</label>
+                                    <select 
+                                        class="form-control"
+                                        t-model="state.categoryId"
+                                        t-on-change="(ev) => this.onCategoryChange(ev)">
+                                        <option value="">Select a category</option>
+                                        <t t-foreach="state.categories" t-as="category" t-key="category.id">
+                                            <option t-att-value="category.id" t-esc="category.name"/>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-primary">Answer</label>
+                                    <textarea 
+                                        class="form-control" 
+                                        rows="4" 
+                                        placeholder="Enter the answer here (HTML supported)..."
+                                        t-model="state.answer"/>
+                                    <small class="form-text text-muted">Basic HTML tags like &lt;p&gt;, &lt;strong&gt;, &lt;em&gt; are supported</small>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <button class="btn btn-primary" t-on-click="() => this.saveFAQ()">
+                                        Save
+                                    </button>
+                                    <button class="btn btn-secondary ml-2" t-on-click="() => this.hideForm()">
+                                        Cancel
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </t>
-            </div>
+                </div>
 
-            <!-- Empty State -->
-            <div class="row" t-if="state.faqs.length === 0 and !state.showForm">
-                <div class="col-12 text-center py-5">
-                    <i class="fa fa-question-circle fa-3x text-muted mb-3"/>
-                    <h4 class="text-muted">No FAQs yet</h4>
-                    <p class="text-muted">Click "Add FAQ" to create your first FAQ</p>
+                <!-- FAQ Cards List - Scrollable -->
+                <div class="row" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding-right: 10px;">
+                    <div class="col-12">
+                        <t t-foreach="state.faqs" t-as="faq" t-key="faq.id">
+                            <div class="mb-3">
+                                <div class="card shadow-sm faq-card" 
+                                     style="border: 2px dashed #0dcaf0;">
+                                    <div class="card-body" style="background-color: #e7f6fd;">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="flex-grow-1">
+                                                <h5 class="mb-2" style="color: #0d6efd;">
+                                                    <i class="fa fa-question-circle mr-2"/>
+                                                    <t t-esc="faq.name"/>
+                                                </h5>
+                                                <div class="mb-2" style="color: #0d6efd !important;">
+                                                    <t t-out="faq.answerMarkup"/>
+                                                </div>
+                                                <small class="text-muted">
+                                                    <t t-esc="faq.last_updated"/>
+                                                </small>
+                                            </div>
+                                            <div class="ml-3 d-flex">
+                                                <button 
+                                                    class="btn btn-link text-primary p-1" 
+                                                    t-on-click="() => this.editFAQ(faq)"
+                                                    title="Edit">
+                                                    <i class="fa fa-pencil"/>
+                                                </button>
+                                                <button 
+                                                    class="btn btn-link text-danger p-1 ml-1" 
+                                                    t-on-click="() => this.deleteFAQ(faq.id)"
+                                                    title="Delete">
+                                                    <i class="fa fa-trash"/>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- Empty State -->
+                        <div t-if="state.faqs.length === 0 and !state.showForm" class="text-center py-5">
+                            <i class="fa fa-question-circle fa-3x text-muted mb-3"/>
+                            <h4 class="text-muted">No FAQs yet</h4>
+                            <p class="text-muted">Click "Add FAQ" to create your first FAQ</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
