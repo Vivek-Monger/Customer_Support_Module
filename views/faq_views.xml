@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- FAQ list View -->
+    <!-- FAQ List View (Backend) 
     <record id="view_customer_support_faq_list" model="ir.ui.view">
         <field name="name">customer.support.faq.list</field>
         <field name="model">customer.support.faq</field>
@@ -15,9 +15,9 @@
                 <field name="last_updated"/>
             </list>
         </field>
-    </record>
+    </record> -->
 
-    <!-- FAQ Form View -->
+    <!-- FAQ Form View 
     <record id="view_customer_support_faq_form" model="ir.ui.view">
         <field name="name">customer.support.faq.form</field>
         <field name="model">customer.support.faq</field>
@@ -47,9 +47,106 @@
                 </sheet>
             </form>
         </field>
+    </record> -->
+
+    <!-- FAQ Dashboard Template 
+    <template id="faq_dashboard_template" name="FAQ Dashboard">
+        <t t-call="web.html_container">
+            <div class="container-fluid mt-3">
+                <div class="row mb-4">
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        <h2 class="mb-0">Frequently Asked Questions</h2>
+                        <button class="btn btn-primary" id="add_faq_btn">
+                            <i class="fa fa-plus"/> Add FAQ
+                        </button>
+                    </div>
+                </div> -->
+
+                <!-- Add/Edit FAQ Form 
+                <div class="row mb-4" id="faq_form_container" style="display: none;">
+                    <div class="col-12">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="faq_question" class="font-weight-bold">Question</label>
+                                    <input type="text" class="form-control" id="faq_question" 
+                                           placeholder="How do I reset my password?"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="faq_answer" class="font-weight-bold">Answer</label>
+                                    <textarea class="form-control" id="faq_answer" rows="4" 
+                                              placeholder="Enter the answer here..."></textarea>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <button class="btn btn-primary" id="save_faq_btn">Save</button>
+                                    <button class="btn btn-secondary ml-2" id="cancel_faq_btn">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- FAQ Cards List 
+                <div class="row" id="faq_list_container">
+                    <t t-foreach="faqs" t-as="faq">
+                        <div class="col-12 mb-3 faq-item" t-att-data-id="faq.id">
+                            <div class="card shadow-sm" style="border: 2px solid #0dcaf0; border-style: dashed;">
+                                <div class="card-body" style="background-color: #e7f6fd;">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h5 class="text-primary mb-2">
+                                                <i class="fa fa-question-circle mr-2"/>
+                                                <t t-esc="faq.name"/>
+                                            </h5>
+                                            <div class="text-muted mb-2">
+                                                <t t-raw="faq.answer"/>
+                                            </div>
+                                            <small class="text-muted">
+                                                <t t-esc="faq.last_updated.strftime('%b %d, %Y') if faq.last_updated else ''"/>
+                                            </small>
+                                        </div>
+                                        <div class="ml-3">
+                                            <button class="btn btn-link text-primary p-1 edit-faq-btn" 
+                                                    t-att-data-id="faq.id" title="Edit">
+                                                <i class="fa fa-pencil"/>
+                                            </button>
+                                            <button class="btn btn-link text-danger p-1 delete-faq-btn" 
+                                                    t-att-data-id="faq.id" title="Delete">
+                                                <i class="fa fa-trash"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template> -->
+
+    <!-- FAQ Dashboard Action (Client Action) -->
+    <record id="action_customer_support_faq_dashboard" model="ir.actions.client">
+        <field name="name">FAQ Dashboard</field>
+        <field name="tag">faq_dashboard</field>
     </record>
 
-    <!-- FAQ Category list View -->
+    <!-- FAQ Standard Action (for backend list/form) 
+    <record id="action_customer_support_faq" model="ir.actions.act_window">
+        <field name="name">FAQs</field>
+        <field name="res_model">customer.support.faq</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first FAQ
+            </p>
+            <p>
+                Add frequently asked questions to help your customers.
+            </p>
+        </field>
+    </record> -->
+
+    <!-- FAQ Category List View 
     <record id="view_customer_support_faq_category_list" model="ir.ui.view">
         <field name="name">customer.support.faq.category.list</field>
         <field name="model">customer.support.faq.category</field>
@@ -61,9 +158,9 @@
                 <field name="active" widget="boolean_toggle"/>
             </list>
         </field>
-    </record>
+    </record> -->
 
-    <!-- FAQ Category Form View -->
+    <!-- FAQ Category Form View 
     <record id="view_customer_support_faq_category_form" model="ir.ui.view">
         <field name="name">customer.support.faq.category.form</field>
         <field name="model">customer.support.faq.category</field>
@@ -95,9 +192,10 @@
                 </sheet>
             </form>
         </field>
-    </record>
+    </record> -->
+    
 
-    <!-- FAQ Category Action -->
+    <!-- FAQ Category Action 
     <record id="action_customer_support_faq_category" model="ir.actions.act_window">
         <field name="name">FAQ Categories</field>
         <field name="res_model">customer.support.faq.category</field>
@@ -110,13 +208,25 @@
                 Organize your FAQs into categories for better navigation.
             </p>
         </field>
-    </record>
+    </record> -->
 
     <!-- Menu Items -->
+    <menuitem id="menu_customer_support_faq"
+              name="FAQ Dashboard"
+              parent="menu_customer_support_root"
+              action="action_customer_support_faq_dashboard"
+              sequence="85"/>
+    <!-- 
+    <menuitem id="menu_customer_support_faq_list"
+              name="Manage FAQs"
+              parent="menu_customer_support_root"
+              action="action_customer_support_faq"
+              sequence="86"/>
 
     <menuitem id="menu_customer_support_faq_category"
-              name="FAQ"
+              name="FAQ Categories"
               parent="menu_customer_support_root"
               action="action_customer_support_faq_category"
               sequence="90"/>
+              -->
 </odoo>
