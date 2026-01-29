@@ -40,6 +40,7 @@ Long description of module's purpose
         'views/sla_cron.xml',
         'views/activity_log_dashboard.xml',
         'views/project_assignment_wizard.xml',
+        'views/user_manager.xml',
     ],
     'assets': {
         'web.assets_backend': [
