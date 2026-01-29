@@ -21,6 +21,7 @@ Long description of module's purpose
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/projects.xml',
+        'views/project_assignment_wizard.xml',
         'views/user_manager.xml',
         'views/portal_menu.xml',
         'views/portal_my_tickets.xml',
@@ -39,8 +40,6 @@ Long description of module's purpose
         'views/portal_ticket_detail.xml',
         'views/sla_cron.xml',
         'views/activity_log_dashboard.xml',
-        'views/project_assignment_wizard.xml',
-        'views/user_manager.xml',
     ],
     'assets': {
         'web.assets_backend': [
