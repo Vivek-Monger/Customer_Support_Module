@@ -1,47 +1,119 @@
 <odoo>
-
     <!-- Dashboard Form View -->
     <record id="view_customer_support_overview_form" model="ir.ui.view">
         <field name="name">customer.support.overview.form</field>
         <field name="model">customer.support.overview</field>
         <field name="arch" type="xml">
             <form string="Support Overview Dashboard"
-                    create="false"
-                    edit="false"
-                    delete="false"
-                    class="o_support_overview_dashboard">
+                  create="false"
+                  edit="false"
+                  delete="false"
+                  class="o_support_overview_dashboard">
                 <sheet>
-
-                    <group string="Ticket Analytics" col="4">
-                        <field name="open_tickets" readonly="1"/>
-                        <field name="total_tickets" readonly="1"/>
-                        <field name="high_priority" readonly="1"/>
-                        <field name="urgent_tickets" readonly="1"/>
-
-                        <field name="avg_open_hours" readonly="1"/>
-                        <field name="total_hours" readonly="1"/>
-                        <field name="avg_high_priority_hours" readonly="1"/>
-                        <field name="avg_urgent_hours" readonly="1"/>
-
-                        <field name="failed_tickets" readonly="1"/>
-                        <field name="failed_rate" readonly="1"/>
-                        <field name="high_priority_failed" readonly="1"/>
-                        <field name="urgent_failed" readonly="1"/>
-                    </group>
-
-                    <group string="My Performance" col="2">
-                        <field name="today_closed" readonly="1"/>
-                        <field name="sla_last_7_days" readonly="1"/>
-                        <field name="daily_target" readonly="1"/>
-                        <field name="sample_rate" readonly="1"/>
-                    </group>
-
+                    <div class="dashboard_container">
+                        <!-- Left Section: Ticket Analytics -->
+                        <div class="analytics_section">
+                            <h2 class="section_title">Ticket Analytics</h2>
+                            <div class="cards_grid">
+                                <!-- Row 1 -->
+                                <div class="metric_card">
+                                    <div class="card_title">Open Tickets</div>
+                                    <field name="open_tickets" readonly="1" class="card_value"/>
+                                    <div class="card_unit">Tickets</div>
+                                </div>
+                                <div class="metric_card">
+                                    <div class="card_title">Tickets</div>
+                                    <field name="total_tickets" readonly="1" class="card_value"/>
+                                    <div class="card_unit">Total</div>
+                                </div>
+                                <div class="metric_card">
+                                    <div class="card_title">High Priority</div>
+                                    <field name="high_priority" readonly="1" class="card_value"/>
+                                    <div class="card_unit">Tickets</div>
+                                </div>
+                                <div class="metric_card">
+                                    <div class="card_title">Urgent</div>
+                                    <field name="urgent_tickets" readonly="1" class="card_value"/>
+                                    <div class="card_unit">Tickets</div>
+                                </div>
+                                
+                                <!-- Row 2 -->
+                                <div class="metric_card">
+                                    <div class="card_title">Avg Open Hours</div>
+                                    <field name="avg_open_hours" readonly="1" class="card_value"/>
+                                    <div class="card_unit">Hours</div>
+                                </div>
+                                <div class="metric_card">
+                                    <div class="card_title">Total Hours</div>
+                                    <field name="total_hours" readonly="1" class="card_value"/>
+                                    <div class="card_unit">Hours</div>
+                                </div>
+                                <div class="metric_card">
+                                    <div class="card_title">Avg High Priority Hours</div>
+                                    <field name="avg_high_priority_hours" readonly="1" class="card_value"/>
+                                    <div class="card_unit">Hours</div>
+                                </div>
+                                <div class="metric_card">
+                                    <div class="card_title">Avg Urgent Hours</div>
+                                    <field name="avg_urgent_hours" readonly="1" class="card_value"/>
+                                    <div class="card_unit">Hours</div>
+                                </div>
+                                
+                                <!-- Row 3 -->
+                                <div class="metric_card">
+                                    <div class="card_title">Failed Tickets</div>
+                                    <field name="failed_tickets" readonly="1" class="card_value"/>
+                                    <div class="card_unit">Tickets</div>
+                                </div>
+                                <div class="metric_card">
+                                    <div class="card_title">Failed Rate</div>
+                                    <field name="failed_rate" readonly="1" class="card_value"/>
+                                    <div class="card_unit">Percentage</div>
+                                </div>
+                                <div class="metric_card">
+                                    <div class="card_title">High Priority Failed</div>
+                                    <field name="high_priority_failed" readonly="1" class="card_value"/>
+                                    <div class="card_unit">Tickets</div>
+                                </div>
+                                <div class="metric_card">
+                                    <div class="card_title">Urgent Failed</div>
+                                    <field name="urgent_failed" readonly="1" class="card_value"/>
+                                    <div class="card_unit">Tickets</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Section: My Performance -->
+                        <div class="performance_section">
+                            <h2 class="section_title">My Performance</h2>
+                            <div class="performance_cards">
+                                <div class="metric_card">
+                                    <div class="card_title">Today</div>
+                                    <field name="today_closed" readonly="1" class="card_value"/>
+                                    <div class="card_unit">Closed Tickets</div>
+                                </div>
+                                <div class="metric_card">
+                                    <div class="card_title">Avg Last 7 days</div>
+                                    <field name="sla_last_7_days" readonly="1" class="card_value"/>
+                                    <div class="card_unit">SLA Success Rate</div>
+                                </div>
+                                <div class="metric_card">
+                                    <div class="card_title">Daily Target</div>
+                                    <field name="daily_target" readonly="1" class="card_value"/>
+                                    <div class="card_unit">Achievement</div>
+                                </div>
+                                <div class="metric_card">
+                                    <div class="card_title">Sample</div>
+                                    <field name="sample_rate" readonly="1" class="card_value"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </sheet>
-                
             </form>
         </field>
     </record>
-
+    
     <!-- Action -->
     <record id="action_customer_support_overview" model="ir.actions.act_window">
         <field name="name">Overview Dashboard</field>
@@ -49,12 +121,11 @@
         <field name="view_mode">form</field>
         <field name="target">current</field>
     </record>
-
+    
     <menuitem
-    id="menu_customer_support_overview"
-    name="Overview"
-    parent="menu_customer_support_root"
-    action="action_customer_support_overview"
-    sequence="70"/>
-
+        id="menu_customer_support_overview"
+        name="Overview"
+        parent="menu_customer_support_root"
+        action="action_customer_support_overview"
+        sequence="70"/>
 </odoo>

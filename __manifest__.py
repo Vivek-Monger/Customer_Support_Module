@@ -53,6 +53,7 @@ Long description of module's purpose
             'customer_support_module/static/src/css/list.css',
             'customer_support_module/static/src/js/faq_dashboard.js',
             'customer_support_module/static/src/xml/faq_dashboard.xml',
+            'customer_support_module/static/src/css/overview.css',
         ],
     }
 
