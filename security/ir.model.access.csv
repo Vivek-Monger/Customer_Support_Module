@@ -18,8 +18,12 @@ access_customer_support_faq_user,customer.support.faq.user,model_customer_suppor
 access_customer_support_faq_portal,customer.support.faq.portal,model_customer_support_faq,base.group_portal,1,0,0,0
 access_customer_support_faq_category_user,customer.support.faq.category.user,model_customer_support_faq_category,base.group_user,1,1,1,1
 access_customer_support_faq_category_portal,customer.support.faq.category.portal,model_customer_support_faq_category,base.group_portal,1,0,0,0
+<<<<<<< HEAD
 
 access_customer_support_notification_user,customer.support.notification.user,model_customer_support_notification,base.group_user,1,1,1,1
 access_customer_support_notification_portal,customer.support.notification.portal,model_customer_support_notification,base.group_portal,1,1,0,1
 
 access_customer_support_activity_log_all,customer.support.activity.log.all,model_customer_support_activity_log,base.group_user,1,1,1,1
+=======
+access_project_assignment_wizard,access_project_assignment_wizard,model_project_assignment_wizard,customer_support_module.group_admin,1,1,1,1
+>>>>>>> project-feature

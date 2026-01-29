@@ -1,0 +1,44 @@
+<odoo>
+  <data>
+    <!-- Wizard Form View -->
+    <record id="view_project_assignment_wizard" model="ir.ui.view">
+      <field name="name">project.assignment.wizard.form</field>
+      <field name="model">project.assignment.wizard</field>
+      <field name="arch" type="xml">
+        <form string="Assign Projects">
+          <group>
+            <field name="customer_id" readonly="1"/>
+            <field name="project_ids" widget="many2many_tags"/>
+          </group>
+          <footer>
+            <button string="Assign Projects" 
+                    type="object" 
+                    name="action_assign_projects" 
+                    class="btn-primary"/>
+            <button string="Cancel" class="btn-secondary" special="cancel"/>
+          </footer>
+        </form>
+      </field>
+    </record>
+
+    <!-- Wizard Action -->
+    <record id="action_assign_projects_wizard" model="ir.actions.act_window">
+      <field name="name">Assign Projects</field>
+      <field name="res_model">project.assignment.wizard</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+      <field name="binding_model_id" ref="model_user_manager"/>
+    </record>
+
+    <!-- Action to Unassign Project -->
+    <record id="action_unassign_project" model="ir.actions.server">
+      <field name="name">Unassign Project</field>
+      <field name="model_id" ref="model_customer_project"/>
+      <field name="binding_model_id" ref="model_customer_project"/>
+      <field name="state">code</field>
+      <field name="code">
+records.write({'customer_id': False})
+      </field>
+    </record>
+  </data>
+</odoo>

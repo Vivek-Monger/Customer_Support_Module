@@ -1,7 +1,6 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
-
 class UserManager(models.Model):
     _name = 'user.manager'
     _description = 'Manage Customers and Support Agents'
@@ -13,8 +12,57 @@ class UserManager(models.Model):
         ('support_agent', 'Support Agent')
     ], required=True)
     user_id = fields.Many2one('res.users', readonly=True)
+    
+    # Projects relationship - Computed Many2many field
+    project_ids = fields.Many2many(
+        'customer.project',
+        compute='_compute_project_ids',
+        string="Projects",
+        store=False
+    )
+    
+    project_count = fields.Integer(
+        string="Projects",
+        compute='_compute_project_count'
+    )
 
     DEFAULT_PASSWORD = '123'
+
+    @api.depends('user_id')
+    def _compute_project_ids(self):
+        """Get all projects linked to this user's portal account"""
+        for record in self:
+            if record.user_id:
+                projects = self.env['customer.project'].search([
+                    ('customer_id', '=', record.user_id.id)
+                ])
+                record.project_ids = projects
+            else:
+                record.project_ids = False
+
+    @api.depends('user_id')
+    def _compute_project_count(self):
+        """Count projects linked to this user"""
+        for record in self:
+            if record.user_id:
+                record.project_count = self.env['customer.project'].search_count([
+                    ('customer_id', '=', record.user_id.id)
+                ])
+            else:
+                record.project_count = 0
+    
+    def action_view_projects(self):
+        """Smart button action to view/manage projects"""
+        self.ensure_one()
+        return {
+            'name': f'Projects - {self.name}',
+            'type': 'ir.actions.act_window',
+            'res_model': 'customer.project',
+            'view_mode': 'list,form',  
+            'domain': [('customer_id', '=', self.user_id.id)],
+            'context': {'default_customer_id': self.user_id.id},
+            'target': 'current',
+        }
 
     @api.model_create_multi
     def create(self, vals_list):

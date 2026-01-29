@@ -7,5 +7,9 @@ from . import sla_rule
 from . import support_dashboard
 from . import overview
 from . import faq
+<<<<<<< HEAD
 from . import notification
 from . import activity_log
+=======
+from . import project_assignment_wizard  
+>>>>>>> project-feature

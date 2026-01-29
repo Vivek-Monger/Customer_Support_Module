@@ -11,6 +11,7 @@
       <div class="container mt-4">
         <h2>Create a New Ticket</h2>
         
+<<<<<<< HEAD
         <!-- Show alert if coming from confirmation -->
         <div class="alert alert-info" t-if="from_confirm">
           <i class="fa fa-info-circle"></i>
@@ -25,6 +26,10 @@
               class="mt-3"
               enctype="multipart/form-data">
           
+=======
+        <form action="/my/tickets/create/confirm" method="post" class="mt-3"
+              enctype="multipart/form-data">
+>>>>>>> project-feature
           <!-- CSRF Token -->
           <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
           
@@ -59,6 +64,7 @@
               <option value="3" t-att-selected="'selected' if priority == '3' else None">Urgent</option>
             </select>
           </div>
+<<<<<<< HEAD
           
           <!-- Project -->
           <div class="mb-3">
@@ -72,6 +78,38 @@
                 </option>
               </t>
             </select>
+=======
+
+          <!-- Project (Only customer's projects, disable expired) -->
+          <div class="mb-3">
+            <label for="project_id" class="form-label">Project</label>
+            <t t-set="user_projects" t-value="request.env['customer.project'].sudo().search([('customer_id', '=', request.env.uid)], order='warranty_status,project_name')"/>
+            
+            <t t-if="user_projects">
+              <select class="form-select" name="project_id" id="project_id" required="1">
+                <option value="">-- Select a Project --</option>
+                <t t-foreach="user_projects" t-as="proj">
+                  <option t-att-value="proj.id"
+                          t-att-selected="project_id and int(project_id) == proj.id"
+                          t-att-disabled="proj.warranty_status == 'expired' and 'disabled' or None"
+                          t-att-class="proj.warranty_status == 'expired' and 'text-muted' or ''">
+                    <t t-esc="proj.project_name"/>
+                    <t t-if="proj.warranty_status == 'active'"> ✓ (Active - <t t-esc="proj.days_remaining"/> days left)</t>
+                    <t t-if="proj.warranty_status == 'expiring_soon'"> ⚠ (Expiring Soon - <t t-esc="proj.days_remaining"/> days left)</t>
+                    <t t-if="proj.warranty_status == 'expired'"> ✗ (Warranty Expired)</t>
+                  </option>
+                </t>
+              </select>
+              <small class="form-text text-muted">
+                Only projects with active warranty can be selected. Contact support to extend warranty.
+              </small>
+            </t>
+            <t t-else="">
+              <div class="alert alert-warning">
+                You don't have any projects yet. Please contact your administrator to create a project for you.
+              </div>
+            </t>
+>>>>>>> project-feature
           </div>
           
           <!-- Attachments -->
@@ -100,6 +138,7 @@
           </div>
           
           <!-- Buttons -->
+<<<<<<< HEAD
           <div class="mt-4">
             <button type="submit" class="btn btn-primary">
               <i class="fa fa-arrow-right"></i> Continue to Confirmation
@@ -108,6 +147,14 @@
               <i class="fa fa-times"></i> Cancel
             </a>
           </div>
+=======
+          <button type="submit" class="btn btn-primary" t-att-disabled="not user_projects and 'disabled' or None">
+            Create Ticket
+          </button>
+          <a href="/my/tickets" class="btn btn-secondary ms-2">
+            Cancel
+          </a>
+>>>>>>> project-feature
         </form>
       </div>
     </t>
