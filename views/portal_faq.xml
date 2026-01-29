@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main FAQ Page Template -->
+    <template id="portal_faq" name="FAQ Page">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">FAQ</t>
+            </t>
+
+            <div class="container mt-4">
+                <div class="row">
+                    <!-- Sidebar with Categories -->
+                    <div class="col-lg-3 col-md-4 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-list-alt"></i> Categories
+                                </h5>
+                            </div>
+                            <div class="list-group list-group-flush">
+                                <a href="/my/faq" 
+                                   t-attf-class="list-group-item list-group-item-action #{'' if selected_category_id else 'active'}">
+                                    <i class="fa fa-th-large"></i> All Categories
+                                    <span class="badge badge-primary badge-pill float-right" t-esc="total_faqs"/>
+                                </a>
+                                <t t-foreach="categories" t-as="category">
+                                    <a t-attf-href="/my/faq/category/#{category.id}" 
+                                       t-attf-class="list-group-item list-group-item-action #{'active' if selected_category_id == category.id else ''}">
+                                        <t t-esc="category.name"/>
+                                        <span class="badge badge-secondary badge-pill float-right" t-esc="category.faq_count"/>
+                                    </a>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main FAQ Content -->
+                    <div class="col-lg-9 col-md-8">
+                        <!-- Search Bar -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body">
+                                <form method="get" action="/my/faq" class="form-inline">
+                                    <div class="input-group w-100">
+                                        <input type="text" 
+                                               name="search" 
+                                               class="form-control" 
+                                               placeholder="Search FAQs..." 
+                                               t-att-value="search_term"/>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" type="submit">
+                                                <i class="fa fa-search"></i> Search
+                                            </button>
+                                            <t t-if="search_term">
+                                                <a href="/my/faq" class="btn btn-secondary ml-2">
+                                                    <i class="fa fa-times"></i> Clear
+                                                </a>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Search Results Header -->
+                        <t t-if="search_term">
+                            <div class="alert alert-info">
+                                <i class="fa fa-info-circle"></i>
+                                Found <strong t-esc="total_faqs"/> result(s) for "<t t-esc="search_term"/>"
+                            </div>
+                        </t>
+
+                        <!-- FAQ Content by Category -->
+                        <t t-if="faq_by_category">
+                            <t t-foreach="faq_by_category.items()" t-as="item">
+                                <t t-set="category" t-value="item[0]"/>
+                                <t t-set="category_faqs" t-value="item[1]"/>
+                                
+                                <div class="card shadow-sm mb-4">
+                                    <div class="card-header bg-light">
+                                        <h4 class="mb-0">
+                                            <i class="fa fa-folder-open text-primary"></i>
+                                            <t t-esc="category.name"/>
+                                            <small class="text-muted">(<t t-esc="len(category_faqs)"/> questions)</small>
+                                        </h4>
+                                    </div>
+                                    <div class="list-group list-group-flush">
+                                        <t t-foreach="category_faqs" t-as="faq">
+                                            <a t-attf-href="/my/faq/view/#{faq.id}" 
+                                               class="list-group-item list-group-item-action">
+                                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                                    <h6 class="mb-0">
+                                                        <i class="fa fa-question-circle text-primary"></i>
+                                                        <t t-esc="faq.name"/>
+                                                    </h6>
+                                                    <small class="text-muted">
+                                                        <i class="fa fa-eye"></i> <t t-esc="faq.view_count"/> views
+                                                    </small>
+                                                </div>
+                                            </a>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+
+                        <!-- No Results Message -->
+                        <t t-else="">
+                            <div class="card shadow-sm">
+                                <div class="card-body text-center py-5">
+                                    <i class="fa fa-question-circle fa-3x text-muted mb-3"></i>
+                                    <h4>No FAQs Found</h4>
+                                    <p class="text-muted">
+                                        <t t-if="search_term">
+                                            No results found for your search. Try different keywords.
+                                        </t>
+                                        <t t-else="">
+                                            There are no FAQs available at the moment.
+                                        </t>
+                                    </p>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom CSS -->
+            <style>
+                .list-group-item:hover {
+                    background-color: #f8f9fa;
+                }
+                .list-group-item h6 {
+                    font-weight: 500;
+                    color: #333;
+                }
+            </style>
+        </t>
+    </template>
+
+    <!-- FAQ Detail Page Template (Shows expanded answer) -->
+    <template id="portal_faq_detail" name="FAQ Detail Page">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">FAQ</t>
+            </t>
+
+            <div class="container mt-4">
+                <div class="row">
+                    <!-- Sidebar with Categories -->
+                    <div class="col-lg-3 col-md-4 mb-4">
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-list-alt"></i> Categories
+                                </h5>
+                            </div>
+                            <div class="list-group list-group-flush">
+                                <a href="/my/faq" 
+                                   class="list-group-item list-group-item-action">
+                                    <i class="fa fa-th-large"></i> All Categories
+                                </a>
+                                <t t-foreach="categories" t-as="category">
+                                    <a t-attf-href="/my/faq/category/#{category.id}" 
+                                       t-attf-class="list-group-item list-group-item-action #{'active' if selected_category_id == category.id else ''}">
+                                        <t t-esc="category.name"/>
+                                        <span class="badge badge-secondary badge-pill float-right" t-esc="category.faq_count"/>
+                                    </a>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- Related Questions in Same Category -->
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">
+                                    <i class="fa fa-list"></i> Related Questions
+                                </h6>
+                            </div>
+                            <div class="list-group list-group-flush">
+                                <t t-foreach="category_faqs" t-as="related_faq">
+                                    <a t-attf-href="/my/faq/view/#{related_faq.id}" 
+                                       t-attf-class="list-group-item list-group-item-action #{'active' if related_faq.id == selected_faq.id else ''}">
+                                        <small t-esc="related_faq.name"/>
+                                    </a>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main FAQ Detail Content -->
+                    <div class="col-lg-9 col-md-8">
+                        <!-- Back Button -->
+                        <div class="mb-3">
+                            <a t-attf-href="/my/faq/category/#{selected_faq.category_id.id}" class="btn btn-secondary">
+                                <i class="fa fa-arrow-left"></i> Back to <t t-esc="selected_faq.category_id.name"/>
+                            </a>
+                        </div>
+
+                        <!-- FAQ Question Card -->
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="mb-0">
+                                    <i class="fa fa-question-circle"></i>
+                                    <t t-esc="selected_faq.name"/>
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-light mb-3">
+                                    <small>
+                                        <i class="fa fa-folder"></i> Category: <strong t-esc="selected_faq.category_id.name"/>
+                                        <span class="ml-3">
+                                            <i class="fa fa-eye"></i> Views: <strong t-esc="selected_faq.view_count"/>
+                                        </span>
+                                        <span class="ml-3">
+                                            <i class="fa fa-clock-o"></i> Last Updated: 
+                                            <strong t-esc="selected_faq.last_updated.strftime('%B %d, %Y at %I:%M %p') if selected_faq.last_updated else 'N/A'"/>
+                                        </span>
+                                    </small>
+                                </div>
+
+                                <!-- Answer Section -->
+                                <div class="faq-answer-section mt-4">
+                                    <h5 class="mb-3">
+                                        <i class="fa fa-check-circle text-success"></i> Answer:
+                                    </h5>
+                                    <div class="faq-answer-content bg-light p-4 rounded" t-raw="selected_faq.answer"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Help Section -->
+                        <div class="card shadow-sm">
+                            <div class="card-body text-center">
+                                <h6>Still need help?</h6>
+                                <p class="text-muted mb-3">If this answer didn't solve your question, feel free to create a support ticket.</p>
+                                <a href="/my/tickets/create" class="btn btn-primary">
+                                    <i class="fa fa-ticket"></i> Create Support Ticket
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom CSS -->
+            <style>
+                .faq-answer-content {
+                    line-height: 1.8;
+                    font-size: 1.05rem;
+                }
+                .faq-answer-content p {
+                    margin-bottom: 1rem;
+                }
+                .faq-answer-content ul, .faq-answer-content ol {
+                    margin-left: 1.5rem;
+                    margin-bottom: 1rem;
+                }
+                .faq-answer-content h1, .faq-answer-content h2, .faq-answer-content h3 {
+                    margin-top: 1.5rem;
+                    margin-bottom: 1rem;
+                }
+                .faq-answer-section {
+                    border-left: 4px solid #28a745;
+                    padding-left: 1rem;
+                }
+            </style>
+        </t>
+    </template>
+</odoo>

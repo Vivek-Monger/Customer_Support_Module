@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from datetime import timedelta
 
 class customer_support_module(models.Model):
     _name = 'customer.support.module'
@@ -23,10 +24,6 @@ class customer_support_module(models.Model):
         ('3', 'Urgent')
     ], string="Priority", default='0')
     
-    # Simple binary field for file upload
-    # attachment_file = fields.Binary(string="Attach File")
-    # attachment_filename = fields.Char(string="File Name")
-    # Computed field for attachments (alternative approach)
     attachment_ids = fields.Many2many(
         'ir.attachment',
         'customer_support_attachment_rel',
@@ -61,8 +58,7 @@ class customer_support_module(models.Model):
     new_phase_id = fields.Selection(
         selection=lambda self: self.env['customer.support.module']._fields['phase_id'].selection,
         string="To Phase",
-        required=True,
-        default="new"
+        required=True
     )
 
     changed_by = fields.Many2one('res.users', string='Changed By')
@@ -113,6 +109,133 @@ class customer_support_module(models.Model):
         tracking=True
     )
 
+    # SLA FIELDS
+    sla_deadline = fields.Datetime(
+        string='SLA Deadline',
+        compute='_compute_sla_deadline',
+        store=True,
+        help='Deadline based on SLA rules'
+    )
+    
+    sla_breached = fields.Boolean(
+        string='SLA Breached',
+        default=False,
+        help='Indicates if the SLA deadline has been breached'
+    )
+    
+    sla_status = fields.Selection([
+        ('on_time', 'On Time'),
+        ('approaching', 'Approaching Deadline'),
+        ('breached', 'SLA Breached')
+    ], string='SLA Status', compute='_compute_sla_status', store=True)
+    
+    time_to_deadline = fields.Float(
+        string='Hours to Deadline',
+        compute='_compute_time_to_deadline',
+        help='Hours remaining until SLA deadline'
+    )
+
+    # SLA COMPUTED
+    @api.depends('priority', 'create_date', 'phase_id')
+    def _compute_sla_deadline(self):
+        """Compute SLA deadline based on priority"""
+        sla_model = self.env['customer.support.sla.rule']
+        
+        for ticket in self:
+            if ticket.phase_id not in ['resolved', 'closed'] and ticket.priority:
+                sla_rule = sla_model.search([
+                    ('priority', '=', ticket.priority),
+                    ('active', '=', True)
+                ], limit=1)
+                
+                if sla_rule and ticket.create_date:
+                    ticket.sla_deadline = ticket.create_date + timedelta(hours=sla_rule.resolution_time)
+                else:
+                    ticket.sla_deadline = False
+            else:
+                ticket.sla_deadline = False
+
+    @api.depends('sla_deadline', 'sla_breached', 'phase_id')
+    def _compute_sla_status(self):
+        """Compute current SLA status"""
+        current_time = fields.Datetime.now()
+        
+        for ticket in self:
+            if ticket.phase_id in ['resolved', 'closed']:
+                ticket.sla_status = 'on_time'
+            elif ticket.sla_breached:
+                ticket.sla_status = 'breached'
+            elif ticket.sla_deadline:
+                hours_remaining = (ticket.sla_deadline - current_time).total_seconds() / 3600
+                if hours_remaining <= 2:  # Less than 2 hours remaining
+                    ticket.sla_status = 'approaching'
+                else:
+                    ticket.sla_status = 'on_time'
+            else:
+                ticket.sla_status = 'on_time'
+
+    @api.depends('sla_deadline')
+    def _compute_time_to_deadline(self):
+        """Compute hours remaining to deadline"""
+        current_time = fields.Datetime.now()
+        
+        for ticket in self:
+            if ticket.sla_deadline and ticket.phase_id not in ['resolved', 'closed']:
+                delta = ticket.sla_deadline - current_time
+                ticket.time_to_deadline = delta.total_seconds() / 3600
+            else:
+                ticket.time_to_deadline = 0.0
+
+    # SLA NOTIFICATION
+    def _create_notification(self, user_id, title, message, notification_type='phase_change'):
+        """Helper method to create notifications"""
+        self.env['customer.support.notification'].sudo().create({
+            'ticket_id': self.id,
+            'user_id': user_id,
+            'title': title,
+            'message': message,
+            'notification_type': notification_type,
+        })
+
+    def _notify_sla_breach(self):
+        """Notify support agent and admin when SLA is breached"""
+        self.ensure_one()
+        
+        # Get admin users
+        admin_group = self.env.ref('customer_support_module.group_admin')
+        admin_users = self.env['res.users'].search([
+            ('groups_id', 'in', admin_group.id)
+        ])
+        
+        # Prepare notification details
+        priority_label = dict(self._fields['priority'].selection).get(self.priority, 'Unknown')
+        title = f'SLA BREACH: Ticket {self.ticket_id}'
+        message = f'Ticket "{self.subject}" (Priority: {priority_label}) has breached its SLA deadline. Deadline was: {self.sla_deadline.strftime("%Y-%m-%d %H:%M:%S")}'
+        
+        # Notify assigned support agent
+        if self.assigned_user_id:
+            self._create_notification(
+                user_id=self.assigned_user_id.id,
+                title=title,
+                message=message,
+                notification_type='sla_breach'
+            )
+        
+        # Notify all admins
+        for admin in admin_users:
+            self._create_notification(
+                user_id=admin.id,
+                title=title,
+                message=message,
+                notification_type='sla_breach'
+            )
+        
+        # Log message on the ticket
+        self.message_post(
+            body=f'⚠️ SLA BREACHED: This ticket has exceeded its resolution deadline.',
+            message_type='notification',
+            subtype_xmlid='mail.mt_note'
+        )
     
     @api.model_create_multi
     def create(self, vals_list):
@@ -128,21 +251,261 @@ class customer_support_module(models.Model):
             if rec.phase_id and not rec.phase_date:
                 rec.phase_date = rec.create_date
 
+            # Send email notification to assigned agent
+            if rec.assigned_user_id:
+                rec._send_assignment_email()
+
         return records
 
     def write(self, vals):
+    # Check if assigned_user_id is being changed
+        old_assigned_user = self.assigned_user_id if self else False
+
+        # SLA: Store old phase for notifications
+        old_phases = {}
+        for ticket in self:
+            old_phases[ticket.id] = ticket.phase_id
+
+        # Handle phase changes BEFORE super().write()
         if 'phase_id' in vals:
+            # If ticket is being resolved or closed, clear SLA breach
+            if vals['phase_id'] in ['resolved', 'closed']:
+                vals['sla_breached'] = False
+            
             for ticket in self:
-                self.env['customer.support.phase.history'].sudo().create({
-                    'ticket_id': ticket.id,
-                    'old_phase_id': ticket.phase_id,
-                    'new_phase_id': vals['phase_id'],
-                    'changed_by': self.env.uid,
-                    'change_date': fields.Datetime.now(),
-                })
+                # Only create phase history if phase actually changed
+                if ticket.phase_id != vals['phase_id']:
+                    self.env['customer.support.phase.history'].sudo().create({
+                        'ticket_id': ticket.id,
+                        'old_phase_id': ticket.phase_id,
+                        'new_phase_id': vals['phase_id'],
+                        'changed_by': self.env.uid,
+                        'change_date': fields.Datetime.now(),
+                    })
+                    
+                    # Send email to customer on status change (only if actually changed)
+                    ticket._send_status_change_email(ticket.phase_id, vals['phase_id'])
+                
             vals['phase_date'] = fields.Datetime.now()
 
-        return super().write(vals)
+        result = super().write(vals)
+
+        # Send email if assigned_user_id changed
+        if 'assigned_user_id' in vals:
+            for rec in self:
+                # Only send if actually changed and new agent is different from old
+                if rec.assigned_user_id and rec.assigned_user_id != old_assigned_user:
+                    rec._send_assignment_email()
+
+        # SLA: Create in-app notifications for phase changes 
+        if 'phase_id' in vals and not self.env.context.get('skip_phase_notification'):
+            for ticket in self:
+                old_phase = old_phases.get(ticket.id)
+                new_phase = ticket.phase_id
+                
+                # Only create notification if phase ACTUALLY changed
+                if old_phase and old_phase != new_phase:
+                    # Get phase labels
+                    phase_labels = dict(self._fields['phase_id'].selection)
+                    old_phase_label = phase_labels.get(old_phase, 'Unknown')
+                    new_phase_label = phase_labels.get(new_phase, 'Unknown')
+                    
+                    # Check if notification already exists for this exact change (within last 5 seconds)
+                    existing_notification = self.env['customer.support.notification'].sudo().search([
+                        ('ticket_id', '=', ticket.id),
+                        ('user_id', '=', ticket.create_uid.id),
+                        ('notification_type', '=', 'phase_change'),
+                        ('create_date', '>=', fields.Datetime.now() - timedelta(seconds=5)),
+                        ('message', '=', f'Your ticket "{ticket.subject}" has been moved from {old_phase_label} to {new_phase_label}.')
+                    ], limit=1)
+                    
+                    # Only create notification if it doesn't already exist
+                    if not existing_notification and ticket.create_uid:
+                        title = f'Ticket {ticket.ticket_id} Status Updated'
+                        message = f'Your ticket "{ticket.subject}" has been moved from {old_phase_label} to {new_phase_label}.'
+                        ticket._create_notification(
+                            user_id=ticket.create_uid.id,
+                            title=title,
+                            message=message,
+                            notification_type='phase_change'
+                        )
+
+        # SLA: Check for breach if priority changed
+        if 'priority' in vals:
+            for ticket in self:
+                current_time = fields.Datetime.now()
+                if ticket.sla_deadline and current_time > ticket.sla_deadline and not ticket.sla_breached:
+                    # Use sudo().write to avoid recursion
+                    ticket.sudo().write({'sla_breached': True})
+                    ticket._notify_sla_breach()
+
+        return result
+
+    def _send_assignment_email(self):
+        """Send email notification to assigned support agent"""
+        self.ensure_one()
+        
+        if not self.assigned_user_id or not self.assigned_user_id.email:
+            return
+        
+        # Get priority label
+        priority_dict = dict(self._fields['priority'].selection)
+        priority_label = priority_dict.get(self.priority, 'Low')
+        
+        # Get customer name (ticket creator)
+        customer_name = self.create_uid.name if self.create_uid else 'Unknown'
+        
+        # Get project name
+        project_name = self.project_id.name if self.project_id else 'No Project'
+        
+        # Build ticket link
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url', 'http://localhost:8069')
+        ticket_url = f"{base_url}/web#id={self.id}&model=customer.support.module&view_type=form"
+        
+        # Email body
+        mail_values = {
+            'subject': f'New Ticket Assigned: {self.ticket_id} - {self.subject}',
+            'body_html': f"""
+                <p>Dear {self.assigned_user_id.name},</p>
+                <p>A new support ticket has been assigned to you.</p>
+                
+                <h3>Ticket Details:</h3>
+                <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">Ticket ID:</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{self.ticket_id}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">Subject:</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{self.subject or 'No Subject'}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">Customer:</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{customer_name}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">Project:</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{project_name}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">Priority:</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{priority_label}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">Description:</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{self.description or 'No description provided'}</td>
+                    </tr>
+                </table>
+                
+                <p style="margin-top: 20px;">
+                    <a href="{ticket_url}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                        View Ticket
+                    </a>
+                </p>
+                
+                <p>Please review and take action as needed.</p>
+                <p>Best regards,<br>Customer Support System</p>
+            """,
+            'email_to': self.assigned_user_id.email,
+            'email_from': '02220149.cst@rub.edu.bt',
+        }
+        
+        self.env['mail.mail'].sudo().create(mail_values).send()
+
+    # NEW METHOD: Send status change email to customer
+    def _send_status_change_email(self, old_status, new_status):
+        """Send email notification to customer when ticket status changes"""
+        self.ensure_one()
+        
+        # Only send for specific status changes (skip 'new' status)
+        statuses_to_notify = ['open', 'in_progress', 'resolved', 'closed']
+        if new_status not in statuses_to_notify:
+            return
+        
+        # Get customer email (ticket creator)
+        if not self.create_uid or not self.create_uid.email:
+            return
+        
+        customer_email = self.create_uid.email
+        customer_name = self.create_uid.name
+        
+        # Get status labels
+        status_dict = dict(self._fields['phase_id'].selection)
+        old_status_label = status_dict.get(old_status, 'Unknown')
+        new_status_label = status_dict.get(new_status, 'Unknown')
+        
+        # Get assigned agent name
+        agent_name = self.assigned_user_id.name if self.assigned_user_id else 'Support Team'
+        
+        # Build ticket link
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url', 'http://localhost:8069')
+        ticket_url = f"{base_url}/web#id={self.id}&model=customer.support.module&view_type=form"
+        
+        # Customize message based on new status
+        status_messages = {
+            'open': f"""
+                <p>Your support ticket has been <strong>acknowledged</strong> and is now being reviewed by our support team.</p>
+                <p>Assigned Agent: <strong>{agent_name}</strong></p>
+            """,
+            'in_progress': f"""
+                <p>Good news! Our support team has started working on your ticket.</p>
+                <p>Agent <strong>{agent_name}</strong> is currently investigating and resolving your issue.</p>
+            """,
+            'resolved': f"""
+                <p>Great news! Your support ticket has been <strong>resolved</strong>.</p>
+                <p>Agent <strong>{agent_name}</strong> has completed work on your issue.</p>
+                <p>Please review the resolution and let us know if you need any further assistance.</p>
+            """,
+            'closed': f"""
+                <p>Your support ticket has been <strong>closed</strong>.</p>
+                <p>Thank you for using our support system. If you have any other concerns, feel free to create a new ticket.</p>
+            """
+        }
+        
+        status_message = status_messages.get(new_status, '<p>Your ticket status has been updated.</p>')
+        
+        # Email body
+        mail_values = {
+            'subject': f'Ticket Status Updated: {self.ticket_id} - {new_status_label}',
+            'body_html': f"""
+                <p>Dear {customer_name},</p>
+                <p>Your support ticket status has been updated.</p>
+                
+                {status_message}
+                
+                <h3>Ticket Details:</h3>
+                <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">Ticket ID:</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{self.ticket_id}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">Subject:</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{self.subject or 'No Subject'}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">Previous Status:</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{old_status_label}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">New Status:</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><strong style="color: #28a745;">{new_status_label}</strong></td>
+                    </tr>
+                </table>
+                
+                <p style="margin-top: 20px;">
+                    <a href="{ticket_url}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                        View Ticket Details
+                    </a>
+                </p>
+                
+                <p>Best regards,<br>Customer Support Team</p>
+            """,
+            'email_to': customer_email,
+            'email_from': '02220149.cst@rub.edu.bt',
+        }
+        
+        self.env['mail.mail'].sudo().create(mail_values).send()
 
 
 class CustomerSupportPhaseHistory(models.Model):
@@ -163,3 +526,15 @@ class CustomerSupportPhaseHistory(models.Model):
 
     changed_by = fields.Many2one('res.users', string='Changed By')
     change_date = fields.Datetime(default=fields.Datetime.now)
+    
+    def action_view_activity_log(self):
+        """Action to view activity log for this ticket"""
+        self.ensure_one()
+        return {
+            'name': f'Activity Log - {self.ticket_id}',
+            'type': 'ir.actions.act_window',
+            'res_model': 'customer.support.activity.log',
+            'view_mode': 'tree,form',
+            'domain': [('ticket_id', '=', self.id)],
+            'context': {'default_ticket_id': self.id},
+        }

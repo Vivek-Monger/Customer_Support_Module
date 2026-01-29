@@ -1,0 +1,177 @@
+/* Customer Support Overview Dashboard Styles */
+
+/* Overall dashboard background */
+.o_support_overview_dashboard {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    min-height: 100vh;
+}
+
+.o_support_overview_dashboard .o_form_sheet_bg {
+    background: transparent !important;
+}
+
+.o_support_overview_dashboard .o_form_sheet {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 40px 20px;
+    max-width: 100%;
+}
+
+/* Main dashboard container - side by side layout */
+.dashboard_container {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+/* Left section - Ticket Analytics (takes most space) */
+.analytics_section {
+    flex: 1;
+    background: linear-gradient(135deg, #0c5f8a 0%, #1976d2 100%);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Right section - My Performance (fixed width sidebar) */
+.performance_section {
+    width: 350px;
+    background: linear-gradient(135deg, #0c5f8a 0%, #1976d2 100%);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Section titles */
+.section_title {
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 25px 0;
+    padding: 0;
+}
+
+/* Grid layout for analytics cards - 4 columns */
+.cards_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+/* Grid layout for performance cards - 1 column */
+.performance_cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+/* Individual metric card styling */
+.metric_card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+/* Card title (top label) */
+.card_title {
+    font-size: 14px;
+    color: #0c5f8a;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+/* Card value (the number) */
+.card_value {
+    font-size: 36px !important;
+    font-weight: 700 !important;
+    color: #0c5f8a !important;
+    margin: 10px 0 !important;
+    line-height: 1 !important;
+}
+
+/* Hide default Odoo field styling */
+.metric_card .o_field_widget {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 10px 0 !important;
+}
+
+.metric_card .o_field_widget input,
+.metric_card .o_field_widget span {
+    font-size: 36px !important;
+    font-weight: 700 !important;
+    color: #0c5f8a !important;
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    width: 100% !important;
+}
+
+/* Remove focus styling */
+.metric_card .o_field_widget input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Card unit (bottom label) */
+.card_unit {
+    font-size: 13px;
+    color: #03a9f4;
+    font-weight: 500;
+    margin-top: 5px;
+}
+
+/* Remove any default Odoo readonly styling */
+.metric_card .o_field_widget.o_readonly_modifier {
+    cursor: default !important;
+}
+
+/* Responsive design for tablets */
+@media (max-width: 1400px) {
+    .dashboard_container {
+        flex-direction: column;
+    }
+    
+    .performance_section {
+        width: 100%;
+    }
+    
+    .cards_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Responsive design for mobile */
+@media (max-width: 768px) {
+    .cards_grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .o_support_overview_dashboard .o_form_sheet {
+        padding: 20px 10px;
+    }
+    
+    .analytics_section,
+    .performance_section {
+        padding: 20px;
+    }
+    
+    .section_title {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+    
+    .card_value,
+    .metric_card .o_field_widget input,
+    .metric_card .o_field_widget span {
+        font-size: 28px !important;
+    }
+}

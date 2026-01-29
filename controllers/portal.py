@@ -48,7 +48,29 @@ class CustomerSupportPortal(http.Controller):
         methods=['GET', 'POST']
     )
     def portal_create_ticket(self, **post):
-
+        
+        # Check if coming from confirmation page
+        from_confirm = post.get('from_confirm') or request.params.get('from_confirm')
+        
+        if from_confirm:
+            # Retrieve data from session
+            ticket_data = request.session.get('temp_ticket_data', {})
+            file_data_list = request.session.get('temp_ticket_files', [])
+            
+            return request.render(
+                'customer_support_module.portal_create_ticket',
+                {
+                    'subject': ticket_data.get('subject'),
+                    'description': ticket_data.get('description'),
+                    'priority': ticket_data.get('priority'),
+                    'project_id': ticket_data.get('project_id'),
+                    'file_count': len(file_data_list),
+                    'files': file_data_list,
+                    'from_confirm': True,
+                }
+            )
+        
+        # Normal create (not from confirmation)
         return request.render(
             'customer_support_module.portal_create_ticket',
             {
@@ -58,7 +80,6 @@ class CustomerSupportPortal(http.Controller):
                 'project_id': post.get('project_id'),
             }
         )
-
 
     # Create Ticket (Submit)
 
@@ -77,6 +98,7 @@ class CustomerSupportPortal(http.Controller):
             'priority': kwargs.get('priority') or '0',
             'create_uid': request.env.uid,
             'phase_id': 'new',
+            'new_phase_id':'new',
         }
 
         project_id = kwargs.get('project_id')
@@ -105,9 +127,7 @@ class CustomerSupportPortal(http.Controller):
 
         return request.redirect('/my/tickets')
 
-    # ---------------------------------------------------------
     # Reporting Dashboard
-    # ---------------------------------------------------------
     @http.route(
         ['/my/tickets/reporting', '/my/tickets/reporting/<string:graph_type>'],
         type='http',
@@ -284,3 +304,270 @@ class CustomerSupportPortal(http.Controller):
             'customer_support_module.portal_activity_log',
             {'activities': activities}
         )
+
+    @http.route(['/my/faq', '/my/faq/category/<int:category_id>'], type='http', auth='user', website=True)
+    def portal_faq(self, category_id=None, search=None, **kwargs):
+        """Display FAQ page with categories and questions"""
+        
+        FAQ = request.env['customer.support.faq'].sudo()
+        Category = request.env['customer.support.faq.category'].sudo()
+        
+        # Get all active categories with active FAQs
+        categories = Category.search([('active', '=', True)])
+        
+        # Filter FAQs based on category or search
+        domain = [('active', '=', True)]
+        
+        if category_id:
+            domain.append(('category_id', '=', category_id))
+        
+        if search:
+            domain.append('|')
+            domain.append(('name', 'ilike', search))
+            domain.append(('answer', 'ilike', search))
+        
+        faqs = FAQ.search(domain)
+        
+        # Group FAQs by category
+        faq_by_category = {}
+        for category in categories:
+            category_faqs = faqs.filtered(lambda f: f.category_id.id == category.id)
+            if category_faqs:
+                faq_by_category[category] = category_faqs
+        
+        values = {
+            'categories': categories,
+            'faq_by_category': faq_by_category,
+            'selected_category_id': category_id,
+            'search_term': search or '',
+            'total_faqs': len(faqs),
+        }
+        
+        return request.render('customer_support_module.portal_faq', values)
+
+
+    @http.route(['/my/faq/view/<int:faq_id>'], type='http', auth='user', website=True)
+    def portal_faq_view(self, faq_id, **kwargs):
+        """Display single FAQ with expanded answer and increment view count"""
+        
+        FAQ = request.env['customer.support.faq'].sudo()
+        Category = request.env['customer.support.faq.category'].sudo()
+        
+        faq = FAQ.browse(faq_id)
+        
+        if not faq.exists() or not faq.active:
+            return request.redirect('/my/faq')
+        
+        # Increment view count
+        faq.write({'view_count': faq.view_count + 1})
+        
+        # Get all categories for sidebar
+        categories = Category.search([('active', '=', True)])
+        
+        # Get all FAQs in the same category
+        category_faqs = FAQ.search([
+            ('active', '=', True),
+            ('category_id', '=', faq.category_id.id)
+        ])
+        
+        values = {
+            'categories': categories,
+            'selected_faq': faq,
+            'category_faqs': category_faqs,
+            'selected_category_id': faq.category_id.id,
+        }
+        
+        return request.render('customer_support_module.portal_faq_detail', values)
+    
+    # Ticket Details
+    @http.route(['/my/tickets/<int:ticket_id>'], type='http', auth='user', website=True)
+    def portal_ticket_detail(self, ticket_id, **kwargs):
+        """Display detailed view of a single ticket"""
+        
+        Ticket = request.env['customer.support.module'].sudo()
+        
+        # Get the ticket and verify ownership
+        ticket = Ticket.browse(ticket_id)
+        
+        if not ticket.exists() or ticket.create_uid.id != request.env.uid:
+            return request.redirect('/my/tickets')
+        
+        # Get phase labels
+        phase_labels = self._get_phase_labels()
+        
+        # Get phase history
+        phase_history = request.env['customer.support.phase.history'].sudo().search(
+            [('ticket_id', '=', ticket.id)],
+            order='change_date desc'
+        )
+        
+        # Get priority label
+        priority_labels = {
+            '0': 'Low',
+            '1': 'Medium',
+            '2': 'High',
+            '3': 'Urgent'
+        }
+        
+        values = {
+            'ticket': ticket,
+            'phase_labels': phase_labels,
+            'priority_label': priority_labels.get(ticket.priority, 'Unknown'),
+            'phase_history': phase_history,
+            'page_name': 'ticket_detail',
+        }
+        
+        return request.render('customer_support_module.portal_ticket_detail', values)
+    
+    # Notification
+
+    @http.route(['/my/notifications'], type='http', auth='user', website=True)
+    def portal_notifications(self, **kwargs):
+        """Display all notifications for the current user"""
+        
+        Notification = request.env['customer.support.notification'].sudo()
+        
+        # Get all notifications for current user
+        notifications = Notification.search(
+            [('user_id', '=', request.env.uid)],
+            order='create_date desc'
+        )
+        
+        # Separate read and unread
+        unread_notifications = notifications.filtered(lambda n: not n.is_read)
+        read_notifications = notifications.filtered(lambda n: n.is_read)
+        
+        values = {
+            'notifications': notifications,
+            'unread_notifications': unread_notifications,
+            'read_notifications': read_notifications,
+            'unread_count': len(unread_notifications),
+        }
+        
+        return request.render('customer_support_module.portal_notifications', values)
+
+
+    @http.route(['/my/notifications/mark-read/<int:notification_id>'], type='http', auth='user', website=True)
+    def portal_notification_mark_read(self, notification_id, **kwargs):
+        """Mark a single notification as read and redirect"""
+        
+        import logging
+        _logger = logging.getLogger(__name__)
+        
+        try:
+            Notification = request.env['customer.support.notification'].sudo()
+            notification = Notification.browse(notification_id)
+            
+            _logger.info(f"Processing notification ID: {notification_id}")
+            
+            if not notification.exists():
+                _logger.warning(f"Notification {notification_id} does not exist")
+                return request.redirect('/my/notifications')
+            
+            if notification.user_id.id != request.env.uid:
+                _logger.warning(f"User {request.env.uid} tried to access notification {notification_id} owned by {notification.user_id.id}")
+                return request.redirect('/my/notifications')
+            
+            # Mark as read
+            notification.action_mark_as_read()
+            _logger.info(f"Marked notification {notification_id} as read")
+            
+            # Handle redirect parameter from URL query string
+            redirect = kwargs.get('redirect')
+            
+            if redirect == 'notifications':
+                # Stay on notifications page (from tick button)
+                return request.redirect('/my/notifications')
+            elif notification.ticket_id and notification.ticket_id.exists():
+                # Redirect to ticket details if ticket exists (from clicking notification)
+                ticket_id = notification.ticket_id.id
+                _logger.info(f"Redirecting to ticket {ticket_id}")
+                return request.redirect(f'/my/tickets/{ticket_id}')
+            else:
+                _logger.info("No ticket associated with notification")
+                return request.redirect('/my/notifications')
+                
+        except Exception as e:
+            _logger.error(f"Error in portal_notification_mark_read: {str(e)}")
+            import traceback
+            _logger.error(traceback.format_exc())
+            return request.redirect('/my/notifications')
+
+
+    @http.route(['/my/notifications/mark-all-read'], type='http', auth='user', website=True)
+    def portal_notification_mark_all_read(self, **kwargs):
+        """Mark all notifications as read"""
+        
+        Notification = request.env['customer.support.notification'].sudo()
+        Notification.action_mark_all_as_read(request.env.uid)
+        
+        return request.redirect('/my/notifications')
+
+
+    @http.route(['/my/notifications/count'], type='json', auth='user')
+    def portal_notification_count(self, **kwargs):
+        """Get unread notification count (for AJAX calls if needed)"""
+        
+        Notification = request.env['customer.support.notification'].sudo()
+        count = Notification.search_count([
+            ('user_id', '=', request.env.uid),
+            ('is_read', '=', False)
+        ])
+        
+        return {'count': count}
+
+
+    @http.route(['/my/notifications/delete/<int:notification_id>'], type='http', auth='user', website=True)
+    def portal_notification_delete(self, notification_id, **kwargs):
+        """Delete a notification"""
+        
+        Notification = request.env['customer.support.notification'].sudo()
+        notification = Notification.browse(notification_id)
+        
+        if notification.exists() and notification.user_id.id == request.env.uid:
+            notification.unlink()
+        
+        return request.redirect('/my/notifications')
+    
+    @http.route(['/my/notifications/delete-all'], type='http', auth='user', website=True)
+    def portal_notification_delete_all(self, **kwargs):
+        """Delete all notifications for the current user"""
+        
+        Notification = request.env['customer.support.notification'].sudo()
+        notifications = Notification.search([('user_id', '=', request.env.uid)])
+        
+        if notifications:
+            notifications.unlink()
+        
+        return request.redirect('/my/notifications')
+
+
+    @http.route(['/my/notifications/delete-selected'], type='http', auth='user', website=True, methods=['POST'])
+    def portal_notification_delete_selected(self, **kwargs):
+        """Delete selected notifications"""
+        
+        import logging
+        _logger = logging.getLogger(__name__)
+        
+        try:
+            # Get selected notification IDs from form
+            selected_ids = request.httprequest.form.getlist('selected_notifications')
+            _logger.info(f"Selected notification IDs: {selected_ids}")
+            
+            if selected_ids:
+                Notification = request.env['customer.support.notification'].sudo()
+                
+                # Convert to integers and filter for current user's notifications only
+                notification_ids = [int(nid) for nid in selected_ids]
+                notifications = Notification.browse(notification_ids).filtered(
+                    lambda n: n.user_id.id == request.env.uid
+                )
+                
+                if notifications:
+                    notifications.unlink()
+                    _logger.info(f"Deleted {len(notifications)} notifications")
+            
+        except Exception as e:
+            _logger.error(f"Error deleting selected notifications: {str(e)}")
+        
+        return request.redirect('/my/notifications')

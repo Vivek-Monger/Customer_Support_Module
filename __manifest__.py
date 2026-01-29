@@ -37,7 +37,24 @@ Long description of module's purpose
         'views/portal_ticket_overview.xml',
         'views/portal_activity_log.xml',
         'views/portal_ticket_confirmation.xml',
+        'views/portal_faq.xml',
+        'views/faq_views.xml',
+        'views/notification_views.xml',
+        'views/portal_notification.xml',
+        'views/portal_ticket_detail.xml',
+        'views/sla_cron.xml',
+        'views/activity_log_dashboard.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'customer_support_module/static/src/css/kanban.css',
+            'customer_support_module/static/src/css/overview_dashboard.css',
+            'customer_support_module/static/src/css/navbar.css',
+            'customer_support_module/static/src/css/list.css',
+            'customer_support_module/static/src/js/faq_dashboard.js',
+            'customer_support_module/static/src/xml/faq_dashboard.xml',
+            'customer_support_module/static/src/css/overview.css',
+        ],
+    }
 
 }
-

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
   <template id="portal_my_tickets" name="My Tickets">
     <t t-call="portal.portal_layout">
@@ -27,7 +28,7 @@
           </div>
         </div>
 
-        <!-- ================= LIST VIEW ================= -->
+        <!-- LIST VIEW -->
         <t t-if="current_view == 'list'">
 
           <table class="table table-striped">
@@ -42,8 +43,16 @@
             <tbody>
               <t t-foreach="tickets" t-as="ticket">
                 <tr>
-                  <td><t t-esc="ticket.ticket_id"/></td>
-                  <td><t t-esc="ticket.subject"/></td>
+                  <td>
+                    <a t-att-href="'/my/tickets/%s' % ticket.id" class="text-decoration-none">
+                      <t t-esc="ticket.ticket_id"/>
+                    </a>
+                  </td>
+                  <td>
+                    <a t-att-href="'/my/tickets/%s' % ticket.id" class="text-decoration-none text-dark">
+                      <t t-esc="ticket.subject"/>
+                    </a>
+                  </td>
                   <td>
                     <span t-if="ticket.priority == '0'">Low</span>
                     <span t-if="ticket.priority == '1'">Medium</span>
@@ -64,7 +73,7 @@
 
         </t>
 
-        <!-- ================= KANBAN VIEW ================= -->
+        <!--  KANBAN VIEW  -->
         <t t-if="current_view == 'kanban'">
 
           <div class="row">
@@ -86,10 +95,12 @@
                       <t t-foreach="phase_tickets" t-as="ticket">
                         <div class="card mb-2">
                           <div class="card-body p-2">
-                            <strong><t t-esc="ticket.ticket_id"/></strong>
-                            <div class="small text-muted">
-                              <t t-esc="ticket.subject"/>
-                            </div>
+                            <a t-att-href="'/my/tickets/%s' % ticket.id" class="text-decoration-none text-dark">
+                              <strong><t t-esc="ticket.ticket_id"/></strong>
+                              <div class="small text-muted">
+                                <t t-esc="ticket.subject"/>
+                              </div>
+                            </a>
 
                             <div class="mt-1">
                               <span class="badge bg-secondary" t-if="ticket.priority == '0'">Low</span>
